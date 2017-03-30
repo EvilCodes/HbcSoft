@@ -1,0 +1,273 @@
+@charset "utf-8";
+@font-face{
+	font-family: "ConST-font";
+	src:url(../fonts/Munro.eot), url(../fonts/Munro.otf), url(../fonts/Munro.svg), url(../fonts/Munro.ttf), url(../fonts/Munro.woff);
+}
+*{
+	margin: 0;
+	padding: 0;
+}
+a{
+	text-decoration: none;
+}
+li{
+	list-style: none;
+}
+img{
+	border: 0;
+}
+input{
+	border: none;
+}
+hr{
+	border-color: #bbb; 
+}
+header, section, footer, aside, nav, main, article, figure {
+    display: block; 
+}
+h1,h2,h3,h4,h5,h6{
+	font-weight: normal;
+}
+.clear{
+	clear: both;
+}
+body{
+	overflow-x: hidden;
+	overflow-y: scroll;
+	background: #f6f6f6;
+}
+ul{
+	margin-bottom: 0;
+}
+.must{
+	color: #ff0000;
+}
+/*header部分---start*/
+header{
+	height: 65px;
+	width: 100%;
+	background: #fff;
+}
+header #pc .title{
+	width: 40%;
+	float: left;
+	padding-left: 15px;
+}
+header #pc .fix{
+	float: right;
+	width: 60%;
+	padding-right:30px;
+}
+header #pc .title img{
+	margin: 10px;
+	float: left; 
+}
+header .title p{
+	color: #333;
+	margin-bottom: 0;
+	line-height: 60px;
+	font-size: 16px;
+	font-weight: 600;
+	padding-left: 15px;
+}
+header #pc .nav > li > a{	/*右侧个人选项区域*/
+	padding: 0 ;
+	margin: 0 15px;
+	line-height: 60px;
+	color: #555;
+}
+.default{
+	cursor: default;
+}
+#pc .nav > li > a:focus, #pc .nav > li > a:hover{
+	background: transparent;
+}
+/*header部分---end*/
+
+/*section部分---start*/
+/*section .logo{
+	height: 80px;
+}*/
+section .logo img{
+	width: 80px;
+	height: 80px;
+	border: 5px solid #fff;
+	border-radius: 50px;
+	margin: 10px 60px;
+}
+/*section .logo i{
+	display: block;
+	width: 20px;
+	height: 20px;
+	line-height: 20px;
+	margin: 30px 10px;
+	font-size: 16px;
+	color: #fff;
+}*/
+section #aside{
+	width: 203px;
+	min-height: 100%;
+	border-radius: 4px;
+	position: absolute;
+	top: 70px;
+	left: 0px;
+}
+#aside ul.subnav li{
+	position: relative;
+}
+#aside ul.subnav li a{
+	display: block;
+	height: 40px;
+	color: #f6f6f6;
+	line-height: 40px;
+	font-size: 14px;
+	padding-left: 8px;	
+	-webkit-transition: all 0.1s;
+	-o-transition: all 0.1s;
+	transition: all 0.1s;
+}
+#aside ul.subnav li a:hover,
+#aside ul.subnav li a:focus{
+	text-decoration: none;
+}
+#aside ul.subnav li a i{
+	width: 14px;
+	height: 14px;
+	margin-right: 2px;
+}
+#aside ul.subnav li ul.menu,
+#aside ul.subnav li ul.menu li .submenu{
+	width: 100%;
+}
+#aside ul.subnav li ul.menu a{
+	padding-left: 38px;
+}
+#aside ul.subnav li ul.menu li .submenu a{
+	padding-left: 52px;
+}
+
+
+/*响应式移动端*/
+#phone{
+	display: none;
+	margin: 0;
+}
+#phone .title{
+	width: 100%;
+	float: left;
+}
+header #phone .title img{
+	padding: 10px;
+	float: left;
+	cursor: pointer;
+}
+#phone .fix .phonesubnav li{
+	float: left;
+}
+#phone .fix .phonesubnav li a{
+	display: block;
+	width: 100%;
+	height: 40px;
+	color: #f6f6f6;
+	font-size: 14px;
+	line-height: 40px;
+	padding-left: 10px;
+	text-decoration: none;
+}
+#phone .fix .phonesubnav li a:hover{
+	color: #fff;
+}
+#phone .menubtn{
+	float: right;
+}
+#phone .menubtn img{
+	margin: 15px;
+}
+/*皮肤样式*/
+.theskin{
+	/*background: black;*/
+}
+.skinbtn{
+	/*float: right;*/
+	display: block;
+	width: 40px;
+	height: 40px;
+	background: #222;
+	text-align: center;
+	line-height: 40px;
+	font-size: 24px;
+}
+.theskin li{
+	/*float: left;*/
+	background: black;
+	padding: 5px;
+}
+.skincolor{
+	width: 66px;
+	height: 40px;
+	background: red;
+	border: 2px solid #fff;
+	border-radius: 0;
+}
+.black{
+	background: #222;
+}
+.purple{
+	background: #701584;
+}
+.blue{
+	background: #337ab7;
+}
+.red{
+	background: #bb0000
+}
+.gray{
+	background: #777;
+}
+.white{
+	background: #fff;
+}
+.green{
+	background: #007700;
+}
+/*iframe部分  start*/
+.contentWrap{
+	position: absolute;
+	bottom: 0;
+	left: 200px;
+	top: 75px;
+	right: 0px;
+	z-index: -999; 
+}
+.Conframe{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	width: 100%;
+}
+#Conframe{
+	border: none;
+	height: 100%;
+	width: 100%;
+}
+@media screen  and (max-width:992px) {
+	#pc{
+		display: none;
+	}
+	#phone{
+		display: block;
+	}
+	#aside{
+		display: none;
+		height: auto;
+		width: 240px;
+	}
+	header .title p{
+		font-size: 16px;
+	}
+	.contentWrap{
+		left: 0;
+	}
+}

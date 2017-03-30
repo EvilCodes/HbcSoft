@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>登录</title>
+	<!--[if lt IE 9]>
+		<script src="http://cdn.static.runoob.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+	<![endif]--> 
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width-device-width,initial-scale-1.0">
+	<link rel="stylesheet" href="../../css/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/login.css">
+</head>
+<body>
+	<div class="container">
+		<form class="form-signin" role="form">
+			<h2>欢迎登录</h2>
+			<div class="form-group input-group">
+				<span class="input-group-addon">
+					<span class="glyphicon glyphicon-user"></span>
+				</span>
+				<input type="text" class="form-control" placeholder="请输入帐号">
+			</div>
+			<div class="form-group input-group">
+				<span class="input-group-addon">
+					<span class="glyphicon glyphicon-lock"></span>
+				</span>
+				<!-- <input type="password" class="form-control" placeholder="请输入密码" > -->
+				<input type="password" class="form-control" placeholder="请输入密码" id="inputPassword">
+			</div>
+			<div id="slider">
+				<div id="slider_bg"></div>
+				<span id="label">></span> <span id="labelTip">拖动滑块验证</span>
+			</div>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+		</form>
+		<div class="fujia">
+			<p>没有帐户?<a href="register.html">创建一个！</a></p>
+			<a href="forgetpassword.html">忘记密码了</a>
+		</div>
+		<div class="footer">
+			<p>&copy;北京海博诚科技有限公司</p>
+		</div>
+	</div>
+	
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/bootstrap/bootstrap.min.js"></script>
+	<script src="../../js/jquery.slideunlock.js"></script>
+	<script>
+		$(function () {
+			var slider = new SliderUnlock("#slider",{
+				successLabelTip : "恭喜您验证成功"	
+			},function(){
+			
+			});
+			slider.init();
+		})
+	</script> 
+</body>
+</html>

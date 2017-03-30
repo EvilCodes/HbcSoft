@@ -1,0 +1,355 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta http-equiv="content-language" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width-device-width,initial-scale-1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>报表类型配置</title>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap/jBootsrapPage.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/skin/<%=request.getSession().getAttribute("cssPath") %>.css" id="myCss">
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/bootstrap/jBootstrapPage.js"></script>
+<script type="text/javascript">
+//全选按钮
+function checkAll(obj,checkName){
+	var checkboxs = document.getElementsByName(checkName);
+	for(var i = 0; i<checkboxs.length; i++ ){
+		if(obj.checked == true){
+			checkboxs[i].checked = true;
+		}else{
+			checkboxs[i].checked = false;
+		}
+	}
+}
+	function search(){
+		$("#currentPage").val(1);//没点击一次查询，初始为第一页
+		$("#search").submit();
+	}
+
+	//打开添加页面
+	function openIns(){
+		var companyId = document.getElementById("companyId").value;
+		
+		window.location.href='${pageContext.request.contextPath}/reportConfig/addReportConfig.hbc?companyId='
+			+companyId;
+	}
+	//双击查看
+	function viewReport(id){
+		$("#getId").val(id);
+		$("#form").submit();
+	}
+	//修改按钮
+	function updateIns(){
+		var aa=document.getElementsByName("rowid");
+		var ids = "";
+		var flag = false;
+		var m = 0;
+		for(var i = 0 ; i<aa.length; i ++ ){
+			if (aa[i].checked == true){
+				ids = ids + aa[i].value + ",";
+				flag = true;
+				m++;
+			}
+		}
+		if(m==0){
+			alert("请先选择一条记录再进行修改操作！");
+			return;
+		}else if(m>1){
+			alert("只能选择一条数据进行修改！");
+			return;
+		}else if(m==1){
+			ids = ids.substring(0,ids.length-1);
+			window.location.href="${pageContext.request.contextPath}/reportConfig/updateReportConfig.hbc?ids="+ids;
+		}
+		
+	}
+	
+	//删除按钮
+	function del(){
+		var isSelected = false;
+		var aa=document.getElementsByName("rowid");
+		for(var i = 0 ; i<aa.length; i ++ ){
+			if (aa[i].checked == true){
+				isSelected = true;
+				break;
+			}
+		}
+		if(!isSelected){
+			alert("请选择要删除的数据！");
+			return false;
+		}
+		var keystr="";
+		for(var i = 0 ; i<aa.length; i++ ){
+			if (aa[i].checked == true){
+				keystr=keystr+ aa[i].value+",";
+			}
+		}
+		$("#del").val(keystr);
+		if(confirm("确定要删除选中的记录吗？")){
+			$("#delForm").submit();
+		}
+	}
+	
+	function createPage(pageSize, buttons, total) {
+		$(".pagination").jBootstrapPage({
+			pageSize : pageSize,
+			total : total,
+			maxPageButton:buttons,
+			onPageClicked: function(obj, pageIndex) {
+				if(isNaN(pageIndex)){
+					pageIndex = 0;
+				}
+				$.ajax({
+					type: 'post',
+					data: 'json',
+					async:true,
+					url: '${pageContext.request.contextPath}/reportConfig/pageReportConfig.hbc?currentPage='+(pageIndex+1)
+							+"&reportName="+encodeURI(encodeURI($("#reportName").val()))
+							+"&reportType="+$("#reportType").val()
+							+"&headType="+encodeURI(encodeURI($("#headType").val()))
+							+"&bodyType="+encodeURI(encodeURI($("#bodyType").val()))
+							+"&dataConfig="+encodeURI(encodeURI($("#dataConfig").val()))
+							+"&remark="+encodeURI(encodeURI($("#remark").val())),
+					success: function(msg){
+						var ttt = eval("("+msg+")");
+						$("#totalNum").val(ttt.totalNum);
+						$("#pageSize").val(ttt.pageSize);
+						$("#pageTimes").val(ttt.pageTimes);
+						$("#currentPage").val(ttt.currentPage);
+						$("#reportName").val(ttt.reportName);
+						$("#remark").val(ttt.remark);
+						$("#num_tr").empty();
+						for(var i=0; i<ttt.reportConfigList.length; i++){
+							var tt = ttt.reportConfigList[i];
+							if(tt.headType == "0"){
+								tt.headType = "固定";
+							}else {
+								tt.headType = "动态";
+							}
+							if(tt.bodyType == "0"){
+								tt.bodyType="固定";
+							}else{
+								tt.bodyType = "动态";
+							}
+							if(tt.dataConfig == "0"){
+								tt.dataConfig = "基础sql";
+							}else if(tt.dataConfig == "1"){
+								tt.dataConfig = "行公共";
+							}else if(tt.dataConfig == "2"){
+								tt.dataConfig = "列公共";
+							}else if(tt.dataConfig == "3"){
+								tt.dataConfig = "特殊行/列";
+							}
+							$("#num_tr").append("<tr ondblclick='viewReport(\""+tt.id+"\")'>"
+									+"<td><input type='checkbox' name='rowid' value='"+tt.id+"'></td>"
+									+"<td>"+(pageIndex*10+i+1)+"</td>"
+									+"<td>"+tt.reportName+"</td>"
+									+"<td>"+tt.reportType+"</td>"
+									+"<td>"+tt.headType+"</td>"
+									+"<td>"+tt.bodyType+"</td>"
+									+"<td>"+tt.dataConfig+"</td>"
+									+"<td>"+tt.reportUrl+"</td>"
+									+"<td>"+tt.remark+"</td></tr>");
+						}
+					},
+					error: function(xhr,err,data){
+						alert("查询失败");
+					}
+				});
+			}
+		});
+	}
+	$(function(){
+		var totalNum = $("#totalNum").val();//总记录数
+		var pageSize = $("#pageSize").val();//每页条数
+		var pageTotal = $("#pageTimes").val();//页数
+		if(parseInt(pageTotal)>10){
+			pageTotal = 10;
+		}
+		createPage(pageSize, pageTotal, totalNum);
+	});
+</script>
+<style type="text/css">
+	label{
+		padding-left: 20px;
+	}
+</style>
+</head>
+<body>
+	<form id="form" action="${pageContext.request.contextPath}/reportConfig/viewReport.hbc">
+		<input type="hidden" name="id" id="getId">
+	</form>
+	<form id="delForm" action="${pageContext.request.contextPath}/reportConfig/deleteReportConfigs.hbc" method="post">
+		<input type="hidden" name="del" id="del">
+	</form>
+	<div class="container">
+		<div class="row">
+			<form id="search" action="${pageContext.request.contextPath}/reportConfig/queryAllReportConfigs.hbc" class="form-horizontal" method="get">
+				<h3>报表类型配置</h3>
+				<hr>
+				<div class="btn-group">
+					<button type="button" class="btn btn-default zsgc" onclick="openIns();">添加</button>
+					<button type="button" class="btn btn-default zsgc" onclick="updateIns();">修改</button>
+					<button type="button" class="btn btn-default zsgc" onclick="del()">删除</button>
+					<button type="button" class="btn btn-default zsgc" onclick="search()">查询</button>
+				</div>	
+				<p></p>
+				<div class="row">	
+						<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<label for="drive" class="control-label col-lg-3 col-md-3 col-sm-4">
+								报表名称：
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-8">
+								<input name="reportName" id="reportName" value="${reportName }" type="text" class="form-control">
+							</div>
+						</div>
+						<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<label for="drive" class="control-label col-lg-3 col-md-3 col-sm-4">
+								报表类型：
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-8">
+								<select class="form-control" id="reportType" name="reportType">
+									<option value=""></option>
+									<option value="财务报表" ${reportType == "财务报表" ? 'selected':''}> 财务报表</option>
+								</select>
+								<%-- <input name="reportType" id="reportType" value="${reportType }" type="text" class="form-control"> --%>
+							</div>
+						</div>
+						<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<label for="drive" class="control-label col-lg-3 col-md-3 col-sm-4">
+								表头类型：
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-8">
+								<select class="form-control" id="headType" name="headType">
+									<option  value=""></option>
+									<option ${headType =="0"?'selected':''} value="0">固定</option>
+									<option ${headType =="1"?'selected':''} value="1">动态</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<label for="drive" class="control-label col-lg-3 col-md-3 col-sm-4">
+								表体类型：
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-8">
+								<select class="form-control" id="bodyType" name="bodyType">
+									<option  value=""></option>
+									<option ${bodyType =="0"?'selected':''} value="0">固定</option>
+									<option ${bodyType =="1"?'selected':''} value="1">动态</option>
+								</select>
+							
+							</div>
+						</div>
+						<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+							<label for="drive" class="control-label col-lg-3 col-md-3 col-sm-4">
+								数据配置：
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-8">
+								<select class="form-control" id="dataConfig" name="dataConfig">
+									<option  value=""></option>
+									<option ${dataConfig =="0"?'selected':''} value="0">基础sql</option>
+									<option ${dataConfig =="1"?'selected':''} value="1">行公共</option>
+									<option ${dataConfig =="2"?'selected':''} value="2">列公共</option>
+									<option ${dataConfig =="3"?'selected':''} value="3">特殊行/列</option>
+								</select>
+							</div>
+						</div>
+					</div>	
+					<input type="hidden" name="pageSize" id="pageSize" value="${pageSize }">
+					<input type="hidden" name="currentPage" id="currentPage" value="${currentPage }">
+					<input type="hidden" name="pageTimes" id="pageTimes" value="${pageTimes }">
+					<input type="hidden" name="totalNum" id="totalNum" value="${totalNum }">
+					<input type="hidden" name="companyId" id="companyId" class="form-control" value="${companyId }">
+				</form>
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover formtable">
+				<thead>
+					<tr class="active">
+						<th><input type="checkbox" name="all" onclick="checkAll(this,'rowid')"></th>
+						<th>序号</th>
+						<th>报表名称</th>
+						<th>报表类型</th>
+						<th>表头类型</th>
+						<th>表体类型</th>
+						<th>数据配置</th>
+						<th>路径</th>
+						<th>备注</th>
+					</tr>
+				</thead>
+				<tbody id="num_tr">
+					<c:forEach items="${reportConfigList }" var="reportConfigs" varStatus="report">
+						<tr ondblclick="viewReport('${reportConfigs.id }')">
+							<td>
+								<input type="checkbox" name="rowid" value="${reportConfigs.id }">
+								<input type="hidden" name="companyId" id="companyId" class="form-control" value="${companyId }">
+							</td>
+							<td>
+								${report.index + 1 }
+							</td>
+							<td>
+								${reportConfigs.reportName }
+							</td>
+							<td>
+								${reportConfigs.reportType }
+							</td>
+							<td>
+								<c:if test="${reportConfigs.headType =='0' }">
+									固定
+								</c:if>
+								<c:if test="${reportConfigs.headType !='0' }">
+									动态
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${reportConfigs.bodyType =='0' }">
+									固定
+								</c:if>
+								<c:if test="${reportConfigs.bodyType !='0' }">
+									动态
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${reportConfigs.dataConfig =='0' }">
+									基础sql
+								</c:if>
+								<c:if test="${reportConfigs.dataConfig =='1' }">
+									行公共
+								</c:if>
+								<c:if test="${reportConfigs.dataConfig =='2' }">
+									列公共
+								</c:if>
+								<c:if test="${reportConfigs.dataConfig =='3' }">
+									特殊行/列
+								</c:if>
+							</td>
+							<td>
+								${reportConfigs.reportUrl }
+							</td>
+							<td>
+								${reportConfigs.remark }
+							</td>
+					</c:forEach>
+				</tbody>
+			</table>
+			<div align = "center"  class="pages">
+				<p id="pageIndex" style="font-size:20px;font-weight:bold;color:blue;margin-left:150px;"></p>
+				<ul class="pagination"></ul>
+			</div>
+		</div>
+	</div>
+	</div>
+</body>
+</html>

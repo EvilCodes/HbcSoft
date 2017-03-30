@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>增加数据表</title>
+	<!--[if lt IE 9]>
+		<script src="http://cdn.static.runoob.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+	<![endif]--> 
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width-device-width,initial-scale-1.0">
+	<link rel="stylesheet" href="../../css/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<h3>增加数据表</h3>
+			<hr>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">表单名称</h3>
+				</div>
+			 	<div class="panel-body">
+					<form action="method" role="form" class="form-horizontal">
+						<div class="form-group">
+							<label for="drive" class="control-label col-md-1 col-sm-2">表单名称</label>
+							<div class="col-md-11 col-sm-10">
+								<input type="text" id="drive" class="form-control" placeholder="">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="drive" class="control-label col-md-1 col-sm-2">表结构</label>
+							<div class="col-md-11 col-sm-10">
+								<select name="" id="" class="form-control">
+									<option value="">主表</option>
+									<option value="">子表</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="drive" class="control-label col-md-1 col-sm-2">备注</label>
+							<div class="col-md-11 col-sm-10">
+								<input type="text" id="drive" class="form-control" placeholder="">
+							</div>
+						</div>
+					</form>
+				</div>
+			</div> 
+			<div class="panel panel-primary">
+				<div class="panel-heading both">
+					<div class="captions">
+						<h3 class="panel-title">字段属性</h3>
+					</div>
+					<div class="actions">
+						<div class="btn-group">
+							<a href="#" class="btn btn-default icons" id="addline">增行</a>
+							<a href="sjkb.html" class="btn btn-default icons">保存</a>
+							<a href="sjkb.html" class="btn btn-default icons">返回</a>
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			 	<div class="panel-body">
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped table-hover formtable" id="adddel">
+							<col width="150px;">
+							<col width="150px;">
+							<col width="90px;">
+							<col width="90px;">
+							<col width="90px;">
+							<col width="120px;">
+							<col width="90px;">
+							<col width="90px;">
+							<col width="120px;">
+							<col width="120px;">
+							
+							
+							<thead>
+								<tr>
+									<th>字段名称</th>
+									<th>字段标题</th>
+									<th>字段类型</th>
+									<th>字段长度</th>
+									<th>小数位数</th>
+									<th>是否允许为空</th>
+									<th>是否显示</th>
+									<th>是否可编辑</th>
+									<th>默认值</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+									<tr>
+										<td><input type="text" class="form-control"></td>
+										<td><input type="text" class="form-control"></td>
+										<td>
+											<select class="form-control">
+												<option>输入框</option>
+												<option>下拉框</option>
+												<option>按钮</option>
+												<option>多选框</option>
+												<option>点选</option>
+												<option>日期</option>
+												<option>文本域</option>
+												<option>金额</option>
+											</select>
+										</td>
+										<td><input type="number" class="form-control" min="0" value="0"></td>
+										<td><input type="number" class="form-control" min="0" value="0"></td>
+										<td>
+											<select class="form-control">
+												<option selected="selected">是</option>
+												<option>否</option>
+											</select>
+										</td>
+										<td>
+											<select class="form-control">
+												<option selected="selected">是</option>
+												<option>否</option>
+											</select>
+										</td>
+										<td>
+											<select class="form-control">
+												<option selected="selected">是</option>
+												<option>否</option>
+											</select>
+										</td>
+										<td><input type="text" class="form-control"></td>
+										<td>
+											<a href="#" onclick="deltr(this)" class="delline">删行</a>
+										</td>
+									</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/bootstrap/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$("#addline").click(function(){
+				var _len = $("#tab tr").length;
+				$("#adddel").append("<tr id="+_len+">"
+					+"<td>"+"<input type='text' class='form-control'>"+"</td>"
+					+"<td>"+"<input type='text' class='form-control'>"+"</td>"
+					+"<td>"+"<select class='form-control'>"+"<option>"+'输入框'+"</option>"+"<option>"+'下拉框'+"</option>"+"<option>"+'按钮'+"</option>"+"<option>"+'多选框'+"</option>"+"<option>"+'点选'+"</option>"+"<option>"+'日期'+"</option>"+"<option>"+'文本域'+"</option>"+"<option>"+'金额'+"</option>"+"</select>"+"</td>"
+					+"<td>"+"<input type='number' class='form-control' min='0' value='0'>"+"</td>"
+					+"<td>"+"<input type='number' class='form-control' min='0' value='0'>"+"</td>"
+					+"<td>"+"<select class='form-control'>"+"<option>"+'是'+"</option>"+"<option>"+'否'+"</option>"+"</td>"
+					+"<td>"+"<select class='form-control'>"+"<option>"+'是'+"</option>"+"<option>"+'否'+"</option>"+"</td>"
+					+"<td>"+"<select class='form-control'>"+"<option>"+'是'+"</option>"+"<option>"+'否'+"</option>"+"</td>"
+					+"<td>"+"<input type='text' class='form-control'>"+"</td>"
+					+"<td><a href=\'#\' class='delline' onclick=\'deltr(this)\'>删行</a></td>"
+				+"</tr>")
+			})
+		})
+		function deltr(nowTR){
+			$(nowTR).parent().parent().remove();
+		}
+	</script>
+</body>
+</html>

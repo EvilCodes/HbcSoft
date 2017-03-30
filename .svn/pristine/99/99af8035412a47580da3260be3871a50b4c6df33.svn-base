@@ -1,0 +1,17 @@
+package com.hbcsoft.error;
+
+public class ErrorConstant {
+	
+	public final static int WARNING_CODE = 0;
+	public final static int EXCEPTION_CODE = 999;
+	public final static int ERROR_CODE = 100;
+
+	public final static String SQLTOOLS_001 = "数据库类型不存在！";
+	public final static String SQLTOOLS_002 = "表名不能为空,请详细确认！";
+	public final static String SQLTOOLS_003 = "字段集不能为空,请详细确认！";
+	public final static String SQLTOOLS_004 = "字段名不能为空,请详细确认！";
+	public final static String SQLTOOLS_005 = "没有配置该字段类型【Z-D-Y】,请详细确认！";
+	public final static String SQLTOOLS_006 = "字段属性名不能为空,请详细确认！";
+	
+	public final static String TEMPLATE_001 = "该表单类型没有正确定义，请详细确认！";
+}

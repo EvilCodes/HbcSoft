@@ -1,0 +1,116 @@
+header{
+	border-bottom: 5px solid #337ab7;
+}
+/*头部导航划过样式*/
+#pc .nav > li > a:focus, #pc .nav > li > a:hover{
+	color: #337ab7;
+}
+/*导航元素样式*/
+section #aside{
+	background: #337ab7;
+	border: 4px solid #f6f6f6;
+	border-bottom: 0;
+}
+/*一级导航元素样式*/
+#aside ul.subnav li a{
+	color: #f6f6f6;
+	border-bottom: 1px solid #286090;
+	border-top: 1px solid #4092d8;
+}
+/*二级导航元素样式*/
+#aside ul.subnav li ul.menu{
+	background: #4092d8;
+}
+#aside ul.menu li a{
+	border-bottom: 1px solid #337ab7;
+	border-top: 1px solid #52a4e9;
+}
+/*三级导航元素样式*/
+#aside ul.subnav li ul.menu li .submenu{
+	background: #52a4e9;
+}
+#aside ul.submenu li a{
+	border-bottom: 1px solid #4092d8;
+	border-top: 1px solid #6ab6f6;
+}
+/*导航元素折叠背景*/
+.inactive{
+	background: url(../../image/off1.png) no-repeat 175px center;
+}
+/*被选中导航元素背景*/
+.navActive{
+	background: #286090 url(../../image/on1.png) no-repeat 175px center;
+}
+.menuActive{
+	background: #337ab7 url(../../image/on1.png) no-repeat 175px center;
+}
+.submenuActives{
+	background: #4092d8 url(../../image/on1.png) no-repeat 175px center;
+}
+/*面板样式*/
+.panel-primary{
+	border-color: #337ab7;
+}
+.panel-primary > .panel-heading{
+	background-color: #337ab7;
+	border-color: #337ab7;
+}
+/*删行按钮*/
+.delline{
+	border: 1px solid #337ab7;
+	background: #337ab7;
+}
+.delline:hover{
+	border: 1px solid #337ab7;
+	color: #337ab7;
+}
+/**/
+.dl-item ol li a:hover{
+	color: #337ab7;
+}
+.mainTitlet{
+	background: #337ab7;
+}
+.btn-primary{
+	background: #337ab7;
+	border-color:#337ab7;
+}
+.pages>.pagination>.page>a{
+	color: #337ab7;
+}
+.pages>.pagination>.active>a{
+	background-color: #337ab7;
+	border-color: #337ab7;
+	color: #fff;
+}
+.pages>.pagination>li>a.first,.pages>.pagination>li>a.pre,.pages>.pagination>li>a.next,.pages>.pagination>li>a.last{
+	color: #337ab7;
+}
+.pages>.pagination>li.disabled>a{
+	color: #999;
+}
+.formcontrol:focus {
+	border-color: #337ab7;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+.form-control:focus {
+	border-color: #337ab7;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+.btn-primary{
+	background: #337ab7;
+	border-color: #3866b1;
+}
+.btn-primary:active,
+.btn-primary:hover {
+	background-color: #3866b1;
+	border-color: #3866b1;
+}
+.btn-primary:active:hover{
+	background-color: #3866b1;
+	border-color: #3866b1;
+}

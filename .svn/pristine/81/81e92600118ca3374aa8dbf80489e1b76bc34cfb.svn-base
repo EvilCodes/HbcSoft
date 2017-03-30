@@ -1,0 +1,14 @@
+package com.hbcsoft.zdy.template.service;
+
+import java.util.List;
+
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.form.entity.FormFields;
+
+public interface TemplateService {
+	List<List<FormFields>> queryAll(List<FormFields> lstFF, List<String> lstTn,String formType) throws HbcsoftException ;
+	void query(List<FormFields> lstFF, List<String> lstTn, String zid) throws HbcsoftException;
+	void save(List<FormFields> lstff, List<String> lstTn) throws HbcsoftException;
+	void delete(List<String> lstTn, String zid) throws HbcsoftException;
+	void update(List<FormFields> lstff, List<String> lstTn) throws HbcsoftException;
+}

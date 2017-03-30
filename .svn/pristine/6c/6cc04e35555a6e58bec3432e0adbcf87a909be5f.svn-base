@@ -1,0 +1,449 @@
+package com.hbcsoft.zdy.template.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.hbcsoft.common.HBCSoftConstant;
+import com.hbcsoft.error.ErrorConstant;
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.form.entity.FormFields;
+import com.hbcsoft.form.entity.FormName;
+import com.hbcsoft.form.service.FormTableService;
+import com.hbcsoft.sys.entity.SessionInfo;
+import com.hbcsoft.zdy.common.BaseController;
+import com.hbcsoft.zdy.common.ComConstant;
+import com.hbcsoft.zdy.template.service.TemplateService;
+import com.hbcsoft.zdy.util.PubTools;
+import com.hbcsoft.zdy.util.SequenceUtil;
+import com.yaja.common.constant.YAJAConstant;
+
+@Controller
+@RequestMapping(value = "/template")
+public class TemplateController extends BaseController<TemplateController> {
+	
+	private transient final static String PAGE_LIST = "template/queryList";
+	private transient final static String PAGE_ADDEIDT = "template/addEdit";
+	private transient final static String PAGE_UPDATEEIDT = "template/updateEdit";
+	private transient final static String PAGE_SHOW = "template/show";
+
+	private transient final static String PARACODE_FORMTYPE = "formType";
+	private transient final static String PARACODE_LSTEDIT = "lstEdit";
+	private transient final static String PARACODE_LSTHIDDEN = "lstHidden";
+	private transient final static String PARACODE_LSTBUTTON = "lstButton";
+	private transient final static String PARACODE_TITLELIST = "titleList";
+	private transient final static String PARACODE_FIELDLIST = "fieldList";
+	
+	private int editType = ComConstant.EDITTYPE_DEFAULT;
+
+	@Autowired
+	private transient TemplateService templateService;
+	@Autowired
+	private transient FormTableService formTableService;
+	private transient ModelAndView mview = null;
+
+	private String formType;
+	private List<FormFields> lstFormFields = new ArrayList<FormFields>();
+	private List<FormFields> lstButton = new ArrayList<FormFields>();
+	private List<FormFields> lstHidden = new ArrayList<FormFields>();
+	private List<FormFields> lstEdit = new ArrayList<FormFields>();
+	private List<String> titleList = new ArrayList<String>();
+	private List<List<FormFields>> fieldList = new ArrayList<List<FormFields>>();
+	private Long companyId = 0L;
+
+	@RequestMapping(value = "/open")
+	public ModelAndView openForm(final String formType) throws HbcsoftException {
+		getLogger().info("=======openForm====start==");
+
+		final SessionInfo sessionInfo = (SessionInfo) this.session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		companyId = sessionInfo.getCompany().getId();
+		mview = new ModelAndView(PAGE_LIST);
+		this.formType = formType;
+
+		this.lstButton.clear();
+		this.lstEdit.clear();
+		this.lstFormFields.clear();
+		this.lstHidden.clear();
+		fieldList.clear();
+		titleList.clear();
+
+		queryFormInfo(companyId);
+
+		this.lstFormFields.forEach(ffield -> {
+			if (ffield.getQueryisConditions() == 1) {
+				lstEdit.add(ffield);
+			}
+		});
+
+		this.lstFormFields.forEach(ffield -> {
+			if (ffield.getQueryisColumn() == 1 && ffield.getIsShowColumn() == 1) {
+				titleList.add(ffield.getTitle());
+			}
+		});
+
+		mview.getModelMap().put(PARACODE_FORMTYPE, formType);
+		mview.getModelMap().put(PARACODE_LSTEDIT, lstEdit);
+		mview.getModelMap().put(PARACODE_LSTHIDDEN, lstHidden);
+		mview.getModelMap().put(PARACODE_LSTBUTTON, lstButton);
+		mview.getModelMap().put(PARACODE_TITLELIST, titleList);
+		mview.getModelMap().put(PARACODE_FIELDLIST, fieldList);
+
+		getLogger().info("=======openForm====end==");
+		return mview;
+	}
+
+	@RequestMapping(value = "/query")
+	public ModelAndView query() throws HbcsoftException {
+		getLogger().info("=======query====start==");
+
+		final String formType = this.request.getParameter("formType");
+		this.lstEdit.forEach(ffield -> {
+			this.setQueryData(ffield);
+		});
+
+		mview = new ModelAndView(PAGE_LIST);
+
+		final List<String> lstTn = this.getLstTn();
+		
+		fieldList.clear();
+		fieldList = templateService.queryAll(lstFormFields, lstTn,formType);
+		
+		mview.getModelMap().put(PARACODE_FORMTYPE, formType);
+		mview.getModelMap().put(PARACODE_LSTEDIT, lstEdit);
+		mview.getModelMap().put(PARACODE_LSTHIDDEN, lstHidden);
+		mview.getModelMap().put(PARACODE_LSTBUTTON, lstButton);
+		mview.getModelMap().put(PARACODE_TITLELIST, titleList);
+		mview.getModelMap().put(PARACODE_FIELDLIST, fieldList);
+
+		getLogger().info("=======query====end==");
+		return mview;
+	}
+
+	@RequestMapping(value = "/newForm")
+	public ModelAndView newForm() throws HbcsoftException {
+		getLogger().info("=======newForm====start==");
+
+		mview = new ModelAndView(PAGE_ADDEIDT);
+
+		clearEditLst();
+
+		queryFormInfo(companyId);
+
+		this.getEditLst();
+		
+		this.getLstEdit();
+		
+		lstEdit.forEach(ff -> {
+			ff.setInputValue(this.formatInputValue(ff));
+		});
+		mview.getModelMap().put(PARACODE_FORMTYPE, formType);
+		mview.getModelMap().put(PARACODE_LSTEDIT, lstEdit);
+		mview.getModelMap().put(PARACODE_LSTHIDDEN, lstHidden);
+		mview.getModelMap().put(PARACODE_LSTBUTTON, lstButton);
+
+		getLogger().info("=======newForm====end==");
+		return mview;
+	}
+	@RequestMapping(value = "/addSave")
+	public ModelAndView addSave() throws HbcsoftException {
+		getLogger().info("=======addSave====start==");
+		final String zid = String.valueOf(SequenceUtil.getTableId("TEMP_ZID"));
+		final String formType = this.request.getParameter("formType");
+
+		lstFormFields.forEach(ff -> {
+			if(ff.getFieldName().equalsIgnoreCase("ZID"))
+			{
+				ff.setInputValue(zid);
+			}else if(ff.getFieldName().equalsIgnoreCase("ID"))
+			{
+				ff.setInputValue(String.valueOf(SequenceUtil.getTableId(ff.getTableName().toUpperCase())));
+			}else if(ff.getFieldName().equalsIgnoreCase("COMPANYID"))
+			{
+				ff.setInputValue(String.valueOf(companyId));
+			}else if(ff.getFieldName().equalsIgnoreCase("FORMTYPE"))
+			{
+				ff.setInputValue(formType);
+			}else{
+				setEditData(ff);
+			}
+		});
+
+		final List<String> lstTn = this.getLstTn();
+		
+		templateService.save(lstFormFields, lstTn);
+		getLogger().info("=======addSave====end==");
+		return openForm(formType);
+	}
+
+	@RequestMapping(value = "/updateSave")
+	public ModelAndView updateSave() throws HbcsoftException {
+		getLogger().info("=======updateSave====start==");
+
+		lstFormFields.forEach(ff -> {
+			setEditData(ff);
+		});
+
+		final List<String> lstTn = this.getLstTn();
+		
+		templateService.update(lstFormFields, lstTn);
+		getLogger().info("=======updateSave====end==");
+		return openForm(formType);
+	}
+
+	@RequestMapping(value = "/delete")
+	public ModelAndView delete(final String selectIndex) throws HbcsoftException {
+		getLogger().info("=======delete====start==");
+		
+		final String zid = getEditZid(selectIndex);
+		
+		final List<String> lstTn = this.getLstTn();
+		
+		templateService.delete(lstTn, zid);
+		
+		getLogger().info("=======delete====end==");
+		return query();
+	}
+
+	@RequestMapping(value = "/update")
+	public ModelAndView update(final String selectIndex) throws HbcsoftException {
+		getLogger().info("=======update====start==");
+		
+		mview = new ModelAndView(PAGE_UPDATEEIDT);
+		final String zid = getEditZid(selectIndex);
+		
+		clearEditLst();
+
+		final List<String> lstTn = this.getLstTn();
+		templateService.query(this.lstFormFields, lstTn, zid);
+		
+		this.getEditLst();
+
+		mview.getModelMap().put(PARACODE_FORMTYPE, formType);
+		mview.getModelMap().put(PARACODE_LSTEDIT, lstEdit);
+		mview.getModelMap().put(PARACODE_LSTHIDDEN, lstHidden);
+		mview.getModelMap().put(PARACODE_LSTBUTTON, lstButton);
+		
+		getLogger().info("=======update====end==");
+		return mview;
+	}
+
+	@RequestMapping(value = "/showForm")
+	public ModelAndView showForm(final String selectIndex) throws HbcsoftException {
+		getLogger().info("=======showForm====start==");
+
+		mview = new ModelAndView(PAGE_SHOW);
+		final String zid = getEditZid(selectIndex);
+		
+		clearEditLst();
+
+		final List<String> lstTn = this.getLstTn();
+		templateService.query(this.lstFormFields, lstTn, zid);
+		
+		this.getEditLst();
+
+		mview.getModelMap().put(PARACODE_FORMTYPE, formType);
+		mview.getModelMap().put(PARACODE_LSTEDIT, lstEdit);
+		mview.getModelMap().put(PARACODE_LSTHIDDEN, lstHidden);
+		mview.getModelMap().put(PARACODE_LSTBUTTON, lstButton);
+
+		getLogger().info("=======showForm====end==");
+		return mview;
+	}
+
+	public int getEditType() {
+		return editType;
+	}
+
+	public void setEditType(final int editType) {
+		this.editType = editType;
+	}
+
+	public List<FormFields> getLstFormFields() {
+		return lstFormFields;
+	}
+
+	public void setLstFormFields(final List<FormFields> lstFormFields) {
+		this.lstFormFields = lstFormFields;
+	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(final String formType) {
+		this.formType = formType;
+	}
+
+	public List<FormFields> getLstButton() {
+		return lstButton;
+	}
+
+	public void setLstButton(final List<FormFields> lstButton) {
+		this.lstButton = lstButton;
+	}
+
+	public List<FormFields> getLstHidden() {
+		return lstHidden;
+	}
+
+	public void setLstHidden(final List<FormFields> lstHidden) {
+		this.lstHidden = lstHidden;
+	}
+
+	public List<FormFields> getLstEdit() {
+		return lstEdit;
+	}
+
+	public void setLstEdit(final List<FormFields> lstEdit) {
+		this.lstEdit = lstEdit;
+	}
+
+	public List<String> getTitleList() {
+		return titleList;
+	}
+
+	public void setTitleList(final List<String> titleList) {
+		this.titleList = titleList;
+	}
+
+	public List<List<FormFields>> getFieldList() {
+		return fieldList;
+	}
+
+	public void setFieldList(final List<List<FormFields>> fieldList) {
+		this.fieldList = fieldList;
+	}
+
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(final Long companyId) {
+		this.companyId = companyId;
+	}
+
+	private void setEditData(final FormFields ffields) {
+		// 类型：0：输入框 1：下拉框 2：按钮 3：多选框 4：点选 5:日期 6：文本域 7：金额
+		switch (ffields.getInputType()) {
+		case HBCSoftConstant.FORM_INPUT_TYPE_0:
+		case HBCSoftConstant.FORM_INPUT_TYPE_1:
+		case HBCSoftConstant.FORM_INPUT_TYPE_3:
+		case HBCSoftConstant.FORM_INPUT_TYPE_4:
+		case HBCSoftConstant.FORM_INPUT_TYPE_6:
+		case HBCSoftConstant.FORM_INPUT_TYPE_5:
+			ffields.setInputValue(this.request.getParameterMap().get(ffields.getFieldName())[0]);
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_7:
+			final String value = this.request.getParameterMap().get(ffields.getFieldName())[0];
+			ffields.setInputValue(PubTools.isEmpty(value)?"0":value);
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_2:
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void setQueryData(final FormFields ffields) {
+		// 类型：0：输入框 1：下拉框 2：按钮 3：多选框 4：点选 5:日期 6：文本域 7：金额
+		switch (ffields.getInputType()) {
+		case HBCSoftConstant.FORM_INPUT_TYPE_0:
+		case HBCSoftConstant.FORM_INPUT_TYPE_4:
+		case HBCSoftConstant.FORM_INPUT_TYPE_6:
+			ffields.setInputValue(this.request.getParameterMap().get(ffields.getFieldName())[0]);
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_2:
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_5:
+		case HBCSoftConstant.FORM_INPUT_TYPE_7:
+			ffields.setStartValue(this.request.getParameterMap().get(ffields.getFieldName() + HBCSoftConstant.START)[0]);
+			ffields.setEndValue(this.request.getParameterMap().get(ffields.getFieldName() + HBCSoftConstant.END)[0]);
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_1:
+		case HBCSoftConstant.FORM_INPUT_TYPE_3:
+			final String[] arr = this.request.getParameterMap().get(ffields.getFieldName());
+			if(PubTools.chkEmpty(arr))
+			{
+				ffields.setInputValue("");
+			}else{
+				final StringBuffer sb = new StringBuffer(32);
+				sb.append(arr[0]);
+				for(int index = 1; index < arr.length; index++)
+				{
+					sb.append(YAJAConstant.CHARACTER_COMMA).append(arr[index]);
+				}
+				ffields.setInputValue(sb.toString());
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private String formatInputValue(final FormFields ffields)
+	{
+		return PubTools.isEmpty(ffields.getInputValue())?ffields.getInputDefaultValue():ffields.getInputValue();
+	}
+
+	private void queryFormInfo(final Long companyId) throws HbcsoftException {
+		final FormName formName = formTableService.queryFByFormType(formType, companyId);
+
+		if (formName == null || formName.getId() == null) {
+			throw new HbcsoftException(this.getClass().getName(), ErrorConstant.ERROR_CODE,
+					ErrorConstant.TEMPLATE_001);
+		}
+
+		lstFormFields = formTableService.selectIDFormField(
+				HBCSoftConstant.FORM_INPUT_TYPE_0,
+				HBCSoftConstant.FORM_INPUT_TYPE_2,
+				String.valueOf(formName.getId()), companyId);
+	}
+	
+	private String getEditZid(final String selectIndex)
+	{
+		final List<FormFields> tempLst = fieldList.get(Integer.valueOf(selectIndex) - 1);
+		for(int index = 0; index < tempLst.size(); index++)
+		{
+			final FormFields ff = tempLst.get(index);
+			if(ff.getFieldName().equalsIgnoreCase("ZID"))
+			{
+				return ff.getInputValue();
+			}
+		}
+		return "";
+	}
+	
+	private List<String> getLstTn()
+	{
+		final List<String> lstTn = new ArrayList<String>();
+		for (int index = 0; index < lstFormFields.size(); index++) {
+			if(!lstTn.contains(lstFormFields.get(index).getTableName()))
+			{
+				lstTn.add(lstFormFields.get(index).getTableName());
+			}
+		}
+		return lstTn;
+	}
+	
+	private void clearEditLst()
+	{
+		this.lstButton.clear();
+		this.lstEdit.clear();
+		this.lstHidden.clear();
+	}
+	
+	private void getEditLst()
+	{
+		this.lstFormFields.forEach(ffield -> {
+			if (ffield.getInputIsDisplay() == 0) {
+				lstEdit.add(ffield);
+			} else {
+				lstHidden.add(ffield);
+			}
+		});
+	}
+}

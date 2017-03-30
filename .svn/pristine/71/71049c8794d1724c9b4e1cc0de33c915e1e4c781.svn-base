@@ -1,0 +1,235 @@
+package com.hbcsoft.sys.service;
+
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.sys.dao.DataDictDaoImp;
+import com.hbcsoft.sys.dao.DictTypeDaoImp;
+import com.hbcsoft.sys.entity.Company;
+import com.hbcsoft.sys.entity.DataDict;
+import com.hbcsoft.sys.entity.DictType;
+import com.hbcsoft.sys.entity.SessionInfo;
+import com.hbcsoft.sys.entity.User;
+import com.hbcsoft.zdy.common.HbcsoftCache;
+import com.hbcsoft.zdy.common.HbcsoftJT;
+import com.hbcsoft.zdy.common.LogBaseClass;
+import com.hbcsoft.zdy.util.PubTools;
+import com.hbcsoft.zdy.util.SequenceUtil;
+
+/**
+ * 数据字典 DataDictServiceImp
+ * @author Administrator
+ *
+ */
+@Transactional
+@Service("DataDictService")
+public class DataDictServiceImp extends LogBaseClass<DataDictServiceImp> implements DataDictService{
+	/**
+	 * HbcsoftJT
+	 */
+	@Autowired
+	private transient  HbcsoftJT jt;
+	/**
+	 * 数据字典 DataDictDaoImp
+	 */
+	@Autowired
+	private transient  DataDictDaoImp  dataDictDao;
+	/**
+	 * 字典类型 DictTypeDaoImp
+	 */
+	@Autowired
+	private  transient  DictTypeDaoImp dictTypeDao;
+	/**
+	 * 修改
+	 * @param entity
+	 * @param company
+	 * @param user
+	 * @param type
+	 * @return
+	 */
+	public int update(final DataDict entity,final SessionInfo session,
+			final DictType type) {
+		// TODO Auto-generated method stub
+		this.getLogger().info("============save=========start==");
+		this.updateAll(entity,session,type);
+		this.getLogger().info("============save=========end==");
+		return 1;
+	}
+	private int updateAll(final DataDict entity,final SessionInfo session,final DictType type){
+		final Company company = session.getCompany();
+		final User user = session.getUser();
+		return this.updateEntity(entity, company, user,type);
+	}
+	private int updateEntity (final DataDict entity,final Company company,final User user,final DictType type){
+		entity.setUpdateTime(new Date());
+		entity.setDtId(type.getId());
+		entity.setCompanyId(company.getId());
+		entity.setUpdateID(user.getId());
+		entity.setUpdateTime(new Date());
+		entity.setDtId(type.getId());
+		try {
+			dataDictDao.update(entity, jt);
+		} catch (HbcsoftException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return 1;
+	}
+	 
+	/**
+	 * 保存
+	 * @param entity
+	 * @param companyId
+	 * @param userId
+	 * @param typeId
+	 * @return
+	 */
+	public int save(final DataDict entity, final SessionInfo session,
+			final DictType type) {
+		// TODO Auto-generated method stub
+		this.getLogger().info("============save=========start==");
+		this.saveAll(entity,session,type);
+		this.getLogger().info("============save=========end==");
+		return 1;
+	}
+	private int saveAll(final DataDict entity,final SessionInfo session,final DictType type){
+		final Company company = session.getCompany();
+		final User user = session.getUser();
+		return this.saveEntity(entity, company, user,type);
+	}
+	private int saveEntity (final DataDict entity,final Company company,final User user,final DictType type){
+		final Long fromid = SequenceUtil.getTableId("F_FORMNAME");
+		entity.setId(fromid);
+		entity.setCompanyId(company.getId());
+		entity.setCreateID(user.getId());
+		entity.setCreateTime(new Date());// 创建时间
+		entity.setUpdateID(user.getId());
+		entity.setUpdateTime(new Date());
+		entity.setDtId(type.getId());
+		try {
+			dataDictDao.save(entity, jt);
+		} catch (HbcsoftException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return 1;
+	}
+	
+	
+	
+	/**
+	 * 根据父节点查询id，dtname并把id的值赋给parentid，到添加页面上级类型默认为父节点
+	 * @param id
+	 * @return
+	 */
+	public DictType queryDictType(final String id) {
+		this.getLogger().info("============queryDictType=========start==");
+		final String sql = HbcsoftCache.getSqlValue("dictType_queryById");
+		DictType dictType = new DictType();
+		try {
+			dictType = dictTypeDao.query(sql, jt, id);
+
+		} catch (InstantiationException e) {
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============queryDictType=========end==");
+		return dictType;
+	}
+	
+	
+	/**
+	 * 删除
+	 */
+	@Override
+	public void queryIds(String ids) {
+		if (PubTools.isEmpty(ids)) {
+
+		} else {
+			ids = ids.substring(0, ids.length() - 1);
+			final String[] strId = ids.split(",");
+			for (int i = 0; i < strId.length; i++) {
+				final String idss = strId[i];
+				final DataDict dd = this.queryDataByIds(idss);
+				this.remove(dd);
+			}
+		}
+	}
+	private int remove(final DataDict entity) {//执行删除
+		// TODO Auto-generated method stub
+		this.getLogger().info("============remove=========start==");
+		try {
+			dataDictDao.delete(entity,jt);
+		} catch (HbcsoftException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============remove=========end==");
+		return 1;
+	}
+	private DataDict queryDataByIds(final String id) {//根据id查询
+		this.getLogger().info("============queryDataByIds=========start==");
+		final String sql = HbcsoftCache.getSqlValue("dataDict_queryById");
+		DataDict dd = new DataDict();
+		try {
+			dd = dataDictDao.query(sql, jt, id);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============queryDataByIds=========end==");
+		return dd;
+	}
+	/**
+	 * (添加)根据编号或名称和公司id查询数据库是否已经存在
+	 */
+	@Override
+	public DataDict queryByCodeName(final String dictCode,final String dictName,
+			final String companyId) throws HbcsoftException {
+		// TODO Auto-generated method stub
+		final String sql= HbcsoftCache.getSqlValue("dataDict_queryByCodeName");
+		DataDict dd= new DataDict();
+		try {
+			dd=dataDictDao.query(sql, jt,dictName,companyId);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return dd;
+	}
+
+	/**
+	 * 修改之前，根据编码或名称和公司id和主键id判断数据库里是否已经存在切除去本身的这一条数据
+	 */
+	@Override
+	public DataDict queryByCodeNameId(final DataDict ddPage,
+			final String companyId) throws HbcsoftException {
+		// TODO Auto-generated method stub
+		DataDict dd= new DataDict();
+		final String sql= HbcsoftCache.getSqlValue("dataDict_queryByCodeNameId");
+		try {
+			dd=dataDictDao.query(sql, jt,ddPage.getDictName(),companyId,String.valueOf(ddPage.getDtId()));
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return dd;
+	}
+	
+}

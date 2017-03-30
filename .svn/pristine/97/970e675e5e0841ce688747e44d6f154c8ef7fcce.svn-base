@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>创建链接数据库信息</title>
+	<!--[if lt IE 9]>
+		<script src="http://cdn.static.runoob.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+	<![endif]--> 
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width-device-width,initial-scale-1.0">
+	<link rel="stylesheet" href="../../css/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/loginstyle.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<form action="method" role="form" class="form-horizontal col-md-8 col-ms-8 col-xs-10 col-md-offset-2 col-ms-offset-2 col-xs-offset-1">
+				<h3>创建链接数据库信息</h3>
+				<hr>
+				<div class="form-group">
+					<label for="drive" class="control-label">driverClassName</label>
+					<input type="text" id="drive" class="form-control" placeholder="请输入驱动">
+				</div>
+				<div class="form-group">
+					<label for="url" class="control-label">URL</label>
+					<input type="text" id="url" class="form-control" placeholder="请输入路径">
+				</div>
+				<div class="form-group">
+					<label for="user" class="control-label">userName</label>
+					<input type="text" id="user" class="form-control" placeholder="请输入数据库用户名">
+				</div>
+				<div class="form-group">
+					<label for="password" class="control-label">password</label>
+					<input type="text" id="password" class="form-control" placeholder="请输入数据库密码">
+				</div>
+				<div class="form-group">
+					<label for="initial" class="control-label">initialSize</label>
+					<input type="text" id="initial" class="form-control" placeholder="请输入初始连接数">
+				</div>
+				<div class="form-group">
+					<label for="active" class="control-label">maxActive</label>
+					<input type="text" id="active" class="form-control" placeholder="请输入最大连接数">
+				</div>
+				<div class="form-group">
+					<label for="maxldle" class="control-label">maxldle</label>
+					<input type="text" id="maxldle" class="form-control" placeholder="请输入最大空闲连接数">
+				</div>
+				<div class="form-group">
+					<label for="minldle" class="control-label">minldle</label>
+					<input type="text" id="minldle" class="form-control" placeholder="请输入最小空闲连接数">
+				</div>
+				<div class="btnlast">
+					<button class="btn btn-primary zsgc">保存</button>
+					<button class="btn btn-default zsgc">取消</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+/*重置浏览器默认样式*/
+h1,h2,h3,h4,p,img,dl,dt,dd,ul,ol,li,input,button{margin:0; padding:0; list-style:none; border:none; outline:none;}
+	body{ margin:0; padding:0; padding-left:0px;font-family:"Microsoft Yahei", Arial, Helvetica, sans-serif;}
+	.table{ border-top:1px solid #f4f4f4;}
+	.table { width:100%;}
+	.table tr{ height:38px; line-height:38px;}
+	.table tr:hover td{ background:#EAF2FF;}
+	.table tr th{ height:40px; line-height:40px; background:#cfe4ef ; font-size:14px; text-align:center; color:#444; font-weight:normal;}
+	.table tr td{ text-align:center; border-bottom:1px dashed #ccc;border-left:0px dashed #ccc;border-right:0px dashed #ccc;border-top:0px dashed #ccc; color:#666;}
+	.table tr.on td{ text-align:center; border-bottom:1px dashed #ccc; color:#666; background:#34c0e2;}
+	
+	.table01 { padding-top:20px;}
+	.table01 tr td{ text-align:right; border-bottom:1px dashed #ccc; color:#666;}
+	.table01 tr td.tdInput{ text-align:left; padding-left:4px;}
+	.table01 tr td.tdradio{ text-align:left; padding-left:4px;}
+	.table01 tr:hover td{ background:#fff;}
+	.table01 tr td.tdInput input,.table01 table tr td.tdInput select{ height:28px; line-height:28px; border:1px solid #f4f4f4; padding:0 4px; width:90%; border-radius:3px;}
+	.table01 tr td.tdInput select{width:94%;}
+	.table01 tr td.tdInput input:hover{ height:28px; line-height:28px; border:1px solid #f4f4f4; padding:0 4px; background:#FCFFFF;}
+	.table01 tr td.tdInput select:hover{ height:28px; line-height:28px; border:1px solid #f4f4f4; padding:0 4px; background:#FCFFFF;}
+	.table01 tr td.btnn{ padding:10px 0 30px;}
+	.btnn a{
+		background: #34c0e2 none repeat scroll 0 0;
+		border: medium none;
+		border-radius: 4px;
+		color: #fff !important;
+		display: inline-block;
+		font-size: 14px;
+		height: 36px;
+		line-height: 36px;
+		padding: 0 14px;
+		text-align: center;
+		margin-left:20px; text-decoration:none;
+	} 
+
+.menuTitle  h2{
+	color: #fff;
+	font-size: 16px;
+	height: 20px;
+	line-height: 20px;
+	margin-bottom: 15px;
+	font-weight:normal;
+}
+.easyui-panel {
+	background-color: #ffffff;
+	color: #000000;
+	font-size: 12px;
+	margin-right:15px;
+}
+.easyui-panel2 {
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: bold;
+	height: 40px;
+	line-height: 40px;
+	margin-left: -1px;
+	padding: 0 21px;
+	font-weight:normal; background:#cfe4ef ;
+}
+/*20150914 add*/
+.listHead{ height:42px; line-height:42px;border:2px solid #EEEFF2; background:#fff;}
+.listHead ul{ overflow:hidden; /*background:#cfe4ef ;*/}
+.listHead ul li{ float:left; width:115px; margin-left:-1px;border-left:1px solid #EEEFF2;}
+.listHead ul li a{ display:block;width:115px; text-align:center;font-size:14px; color:#666; text-decoration:none; }
+.listHead ul li a i{ display:inline-block; width:15px; height:15px; margin-right:10px; position:relative; top:3px;}
+.listHead ul li a i.ico1{ background:url(../images/n9.png) no-repeat center center;}
+.listHead ul li a i.ico2{ background:url(../images/n10.png) no-repeat center center;}
+.listHead ul li a i.ico3{ background:url(../images/n11.png) no-repeat center center;}
+.listHead ul li a i.ico4{ background:url(../images/n12.png) no-repeat center center;}
+.listHead ul li a:hover{ color:#007EED;}

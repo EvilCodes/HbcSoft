@@ -1,0 +1,626 @@
+package com.hbcsoft.report.entity;
+
+import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.hbcsoft.zdy.common.BaseEntity;
+import com.sun.istack.internal.NotNull;
+import com.yaja.validator.inter.Length;
+import com.yaja.validator.inter.Table;
+/**
+ * 报表类型配置
+ * @author yangfeng
+ * @version 201612
+ */
+@Table(name="Z_REPORT_CONFIG")
+public class ReportConfig  extends BaseEntity<ReportConfig> implements Serializable{
+
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = -7559109417292037100L;
+	
+	/**
+	 * 报表名称
+	 */
+	@NotNull
+	private String reportName;
+	
+	/**
+	 * 报表类型
+	 */
+	@NotNull
+	private String reportType;
+	
+	/**
+	 * 表头类型 0：固定 1：动态
+	 */
+	@NotNull
+	private int headType;
+	
+	/**
+	 * 表头配置 H：数据字典 B:系统管理 C:常量
+	 */
+	private String headConfig;
+	
+	/**
+	 * 表头表名
+	 */
+	private String headTableName;
+	
+	/**
+	 * 表头字段名
+	 */
+	private String headFieldName;
+	
+	/**
+	 * 表体类型 0：固定 1：动态
+	 */
+	@NotNull
+	private int bodyType;
+	
+	/**
+	 * 表体配置 H：数据字典 B:系统管理 C:常量
+	 */
+	private String bodyConfig;
+	
+	/**
+	 * 表体表名
+	 */
+	private String bodyTableName;
+	
+	/**
+	 * 表体字段名
+	 */
+	private String bodyFieldName;
+	
+	/**
+	 * 备注
+	 */
+	@Length(max=1000, message="备注信息长度不能超过1000位！")
+	private String remark;
+	
+	/**
+	 * 删除状态 
+	 * 	1-有效状态 
+	 * 	0-无效或删除
+	 */
+	private int delStatus;
+	
+	/**
+	 * 路径
+	 */
+	@NotNull
+	private String reportUrl;
+	
+	/**
+	 * 基础SQL
+	 */
+	private String reportSQL;
+	
+	/**
+	 * 数据配置 0:基础sql 1：行公共 2：列公共 3： 特殊行/列
+	 */
+	private int dataConfig;
+	/**
+	 * 起始行
+	 */
+	private int startRow;
+	/**
+	 * 起始列
+	 */
+	private int startColumn;
+	
+	/**
+	 * 特殊行
+	 */
+	private String specialRow;
+	
+	/**
+	 * 特殊列
+	 */
+	private String specialColumn;
+	
+	/**
+	 * excel下载路径
+	 */
+	private String excelUrl;
+	/**
+	 * 原始模版名称
+	 */
+	private String oldTempleName;
+	
+	/**
+	 * 主标题起始行
+	 */
+	private int mainTitleStartRow;
+	
+	/**
+	 * 主标题起始列
+	 */
+	private int mainTitleStartColumn;
+	
+	/**
+	 * 副标题起始行
+	 */
+	private int subtitleStartRow;
+	
+	/**
+	 * 副标题起始列
+	 */
+	private int subtitleStartColumn;
+	
+	/**
+	 * 获取报表名称
+	 * @return
+	 */
+	public String getReportName() {
+		return reportName;
+	}
+	
+	/**
+	 * 设置报表名称
+	 * @param reportName
+	 */
+	public void setReportName(final String reportName) {
+		this.reportName = reportName;
+	}
+	
+	/**
+	 * 获取报表类型
+	 * @return
+	 */
+	public String getReportType() {
+		return reportType;
+	}
+	
+	/**
+	 * 设置报表类型
+	 * @param reportType
+	 */
+	public void setReportType(final String reportType) {
+		this.reportType = reportType;
+	}
+	
+	/**
+	 * 获取表头类型
+	 * @return
+	 */
+	public int getHeadType() {
+		return headType;
+	}
+	
+	/**
+	 * 设置表头类型
+	 * @param headType
+	 */
+	public void setHeadType(final int headType) {
+		this.headType = headType;
+	}
+	
+	/**
+	 * 获取表头配置
+	 * @return
+	 */
+	public String getHeadConfig() {
+		return headConfig;
+	}
+	
+	/**
+	 * 设置表头配置
+	 * @param headConfig
+	 */
+	public void setHeadConfig(final String headConfig) {
+		this.headConfig = headConfig;
+	}
+	
+	/**
+	 * 获取表体类型
+	 * @return
+	 */
+	public int getBodyType() {
+		return bodyType;
+	}
+	
+	/**
+	 * 设置表体类型
+	 * @param bodyType
+	 */
+	public void setBodyType(final int bodyType) {
+		this.bodyType = bodyType;
+	}
+	
+	/**
+	 * 获取表体配置
+	 * @return
+	 */
+	public String getBodyConfig() {
+		return bodyConfig;
+	}
+	
+	/**
+	 * 设置表体配置
+	 * @param bodyConfig
+	 */
+	public void setBodyConfig(final String bodyConfig) {
+		this.bodyConfig = bodyConfig;
+	}
+	
+	/**
+	 * 获取备注
+	 * @return
+	 */
+	public String getRemark() {
+		return remark;
+	}
+	
+	/**
+	 * 设置备注
+	 * @param remark
+	 */
+	public void setRemark(final String remark) {
+		this.remark = remark;
+	}
+	
+	/**
+	 * 获取删除状态
+	 * @return
+	 */
+	public int getDelStatus() {
+		return delStatus;
+	}
+	
+	/**
+	 * 设置删除状态
+	 * @param delStatus
+	 */
+	public void setDelStatus(final int delStatus) {
+		this.delStatus = delStatus;
+	}
+	
+	/**
+	 * 获取路径
+	 * @return
+	 */
+	public String getReportUrl() {
+		return reportUrl;
+	}
+	
+	/**
+	 * 设置路径
+	 * @param reportUrl
+	 */
+	public void setReportUrl(final String reportUrl) {
+		this.reportUrl = reportUrl;
+	}
+	
+	/**
+	 * 获取基础SQL
+	 * @return
+	 */
+	public String getReportSQL() {
+		return reportSQL;
+	}
+	
+	/**
+	 * 设置基础SQL
+	 * @param reportSQL
+	 */
+	public void setReportSQL(final String reportSQL) {
+		this.reportSQL = reportSQL;
+	}
+	
+	/**
+	 * 获取数据配置
+	 * @return
+	 */
+	public int getDataConfig() {
+		return dataConfig;
+	}
+	
+	/**
+	 * 设置数据配置
+	 * @param dataConfig
+	 */
+	public void setDataConfig(final int dataConfig) {
+		this.dataConfig = dataConfig;
+	}
+	
+	/**
+	 * 获取excel路径
+	 * @return
+	 */
+	public String getExcelUrl() {
+		return excelUrl;
+	}
+	
+	/**
+	 * 设置excel路径
+	 * @param excelUrl
+	 */
+	public void setExcelUrl(final String excelUrl) {
+		this.excelUrl = excelUrl;
+	}
+	/**
+	 * 特殊行get方法
+	 * @return
+	 */
+	public String getSpecialRow() {
+		return specialRow;
+	}
+	/**
+	 * 特殊行set方法
+	 * @param specialRow
+	 */
+	public void setSpecialRow(String specialRow) {
+		this.specialRow = specialRow;
+	}
+	/**
+	 * 特殊列get方法
+	 * @return
+	 */
+	public String getSpecialColumn() {
+		return specialColumn;
+	}
+	/**
+	 *  特殊列set方法
+	 * @param specialColumn
+	 */
+	public void setSpecialColumn(String specialColumn) {
+		this.specialColumn = specialColumn;
+	}	
+	/**
+	 * 起始行
+	 * @return
+	 */
+	public int getStartRow() {
+		return startRow;
+	}
+	/**
+	 *  起始行set
+	 * @param startRow
+	 */
+	public void setStartRow(final int startRow) {
+		this.startRow = startRow;
+	}
+	/**
+	 * 起始列get方法
+	 * @return
+	 */
+	public int getStartColumn() {
+		return startColumn;
+	}
+	/**
+	 * 起始列set方法
+	 * @param startColumn
+	 */
+	public void setStartColumn(final int startColumn) {
+		this.startColumn = startColumn;
+	}
+	
+	/**
+	 * 获取表头表名
+	 * @return
+	 */
+	public String getHeadTableName() {
+		return headTableName;
+	}
+
+	/**
+	 * 设置表头表名
+	 * @param headTableName
+	 */
+	public void setHeadTableName(String headTableName) {
+		this.headTableName = headTableName;
+	}
+
+	/**
+	 * 获取表头字段名
+	 * @return
+	 */
+	public String getHeadFieldName() {
+		return headFieldName;
+	}
+
+	/**
+	 * 设置表头字段名
+	 * @param headFieldName
+	 */
+	public void setHeadFieldName(String headFieldName) {
+		this.headFieldName = headFieldName;
+	}
+
+	/**
+	 * 获取表体表名
+	 * @return
+	 */
+	public String getBodyTableName() {
+		return bodyTableName;
+	}
+
+	/**
+	 * 设置表体表名
+	 * @param bodyTableName
+	 */
+	public void setBodyTableName(String bodyTableName) {
+		this.bodyTableName = bodyTableName;
+	}
+
+	/**
+	 * 获取表体字段名
+	 * @return
+	 */
+	public String getBodyFieldName() {
+		return bodyFieldName;
+	}
+
+	/**
+	 * 设置表体字段名
+	 * @param bodyFieldName
+	 */
+	public void setBodyFieldName(String bodyFieldName) {
+		this.bodyFieldName = bodyFieldName;
+	}
+	
+	/**
+	 * 获取原始模版名称
+	 * @return
+	 */
+	public String getOldTempleName() {
+		return oldTempleName;
+	}
+	
+	/**
+	 * 设置原始模版名称
+	 * @param oldTempleName
+	 */
+	public void setOldTempleName(final String oldTempleName) {
+		this.oldTempleName = oldTempleName;
+	}
+
+	/**
+	 * 获取主标题起始行
+	 * @return
+	 */
+	public int getMainTitleStartRow() {
+		return mainTitleStartRow;
+	}
+
+	/**
+	 * 设置主标题起始行
+	 * @param mainTitleStartRow
+	 */
+	public void setMainTitleStartRow(int mainTitleStartRow) {
+		this.mainTitleStartRow = mainTitleStartRow;
+	}
+
+	/**
+	 * 获取主标题起始列
+	 * @return
+	 */
+	public int getMainTitleStartColumn() {
+		return mainTitleStartColumn;
+	}
+
+	/**
+	 * 设置主标题起始列
+	 * @param mainTitleStartColumn
+	 */
+	public void setMainTitleStartColumn(int mainTitleStartColumn) {
+		this.mainTitleStartColumn = mainTitleStartColumn;
+	}
+
+	/**
+	 * 获取副标题起始行
+	 * @return
+	 */
+	public int getSubtitleStartRow() {
+		return subtitleStartRow;
+	}
+
+	/**
+	 * 设置副标题起始行
+	 * @param subtitleStartRow
+	 */
+	public void setSubtitleStartRow(int subtitleStartRow) {
+		this.subtitleStartRow = subtitleStartRow;
+	}
+
+	/**
+	 * 获取副标题起始列
+	 * @return
+	 */
+	public int getSubtitleStartColumn() {
+		return subtitleStartColumn;
+	}
+
+	/**
+	 * 设置副标题起始列
+	 * @param subtitleStartColumn
+	 */
+	public void setSubtitleStartColumn(int subtitleStartColumn) {
+		this.subtitleStartColumn = subtitleStartColumn;
+	}
+
+	/**
+	 * 重写BaseEntity方法
+	 */
+	@Override
+	public void processRow(final ResultSet rs) throws SQLException {
+		this.setId(rs.getLong("id"));
+		this.setZid(rs.getLong("zid"));
+		this.setCompanyId(rs.getLong("companyId"));
+		this.setUpdateID(rs.getLong("updateID"));
+		this.setUpdateTime(rs.getTimestamp("UpdateTime"));
+		this.setCreateTime(rs.getTimestamp("CreateTime"));
+		this.setCreateID(rs.getLong("CreateID"));
+		this.setReportName(rs.getString("reportName")); 
+		this.setReportType(rs.getString("reportType"));
+		this.setHeadType(rs.getInt("headType"));
+		this.setHeadConfig(rs.getString("headConfig"));
+		this.setBodyType(rs.getInt("bodyType"));
+		this.setBodyConfig(rs.getString("bodyConfig"));
+		this.setRemark(rs.getString("remark"));
+		this.setDelStatus(rs.getInt("delStatus"));
+		this.setReportUrl(rs.getString("reportUrl"));
+		this.setReportSQL(rs.getString("reportSQL"));
+		this.setDataConfig(rs.getInt("dataConfig"));
+		this.setExcelUrl(rs.getString("excelUrl"));
+		this.setSpecialRow(rs.getString("specialRow"));
+		this.setSpecialColumn(rs.getString("specialColumn"));
+		this.setStartRow(rs.getInt("startRow"));
+		this.setStartColumn(rs.getInt("startColumn"));
+		this.setHeadTableName(rs.getString("headTableName"));
+		this.setHeadFieldName(rs.getString("headFieldName"));
+		this.setBodyTableName(rs.getString("bodyTableName"));
+		this.setBodyFieldName(rs.getString("bodyFieldName"));
+		this.setOldTempleName(rs.getString("oldTempleName"));
+		this.setMainTitleStartRow(rs.getInt("mainTitleStartRow"));
+		this.setMainTitleStartColumn(rs.getInt("mainTitleStartColumn"));
+		this.setSubtitleStartRow(rs.getInt("subtitleStartRow"));
+		this.setSubtitleStartColumn(rs.getInt("subtitleStartColumn"));
+	}	
+
+	/**
+	 * 重写BaseEntity方法
+	 */
+	@Override
+	public ReportConfig mapRow(final ResultSet rs, final int arg1) throws SQLException {
+		final ReportConfig  report = new ReportConfig();
+		report.setId(rs.getLong("id"));
+		report.setZid(rs.getLong("zid"));
+		report.setCompanyId(rs.getLong("companyId"));
+		report.setUpdateID(rs.getLong("updateID"));
+		report.setUpdateTime(rs.getTimestamp("UpdateTime"));
+		report.setCreateTime(rs.getTimestamp("CreateTime"));
+		report.setCreateID(rs.getLong("CreateID")); 
+		report.setReportName(rs.getString("reportName")); 
+		report.setReportType(rs.getString("reportType"));
+		report.setHeadType(rs.getInt("headType"));
+		report.setHeadConfig(rs.getString("headConfig"));
+		report.setBodyType(rs.getInt("bodyType"));
+		report.setBodyConfig(rs.getString("bodyConfig"));
+		report.setRemark(rs.getString("remark"));
+		report.setDelStatus(rs.getInt("delStatus"));
+		report.setReportUrl(rs.getString("reportUrl"));
+		report.setReportSQL(rs.getString("reportSQL"));
+		report.setDataConfig(rs.getInt("dataConfig"));
+		report.setExcelUrl(rs.getString("excelUrl"));
+		report.setSpecialRow(rs.getString("specialRow"));
+		report.setSpecialColumn(rs.getString("specialColumn"));
+		report.setStartRow(rs.getInt("startRow"));
+		report.setStartColumn(rs.getInt("startColumn"));
+		report.setHeadTableName(rs.getString("headTableName"));
+		report.setHeadFieldName(rs.getString("headFieldName"));
+		report.setBodyTableName(rs.getString("bodyTableName"));
+		report.setBodyFieldName(rs.getString("bodyFieldName"));
+		report.setOldTempleName(rs.getString("oldTempleName"));
+		report.setMainTitleStartRow(rs.getInt("mainTitleStartRow"));
+		report.setMainTitleStartColumn(rs.getInt("mainTitleStartColumn"));
+		report.setSubtitleStartRow(rs.getInt("subtitleStartRow"));
+		report.setSubtitleStartColumn(rs.getInt("subtitleStartColumn"));
+		return  report;
+	}	
+	
+}

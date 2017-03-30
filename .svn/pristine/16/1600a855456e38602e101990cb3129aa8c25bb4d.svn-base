@@ -1,0 +1,79 @@
+package com.hbcsoft.sys.service;
+
+import java.io.IOException;
+import java.util.List;
+
+import com.hbcsoft.common.TreeNode;
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.sys.entity.Resource;
+/**
+ * 资源管理菜单接口
+ * */
+public interface ResourceService {
+	/**
+	 * 生成树形菜单节点
+	 * @throws IOException 
+	 * @throws HbcsoftException 
+	 * */
+	List<TreeNode> getResourceTreeMenu(final String companyId) throws HbcsoftException, IOException;
+	/**
+	 * 查询当前用户有什么导航栏菜单的权限
+	 * @param id
+	 * @return
+	 * @throws HbcsoftException 
+	 * @throws IOException 
+	 */
+	List<Resource> getRootMenu(Long id) throws HbcsoftException, IOException;
+	/**
+	 * 获取当前导航栏的主级
+	 * @param Id
+	 * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	Resource getRootMenuFirst()throws HbcsoftException, InstantiationException, IllegalAccessException;
+	/**
+	 * 判断资源类型
+	 * @throws HbcsoftException 
+	 * @throws InstantiationException 
+	 * @throws IllegalAccessException 
+	 * @throws IOException 
+	 * */
+	Resource resourceToTreeNode(Resource re, Long id) throws HbcsoftException, IllegalAccessException, InstantiationException, IOException;
+	/**
+	 * 根据父类id查询单位
+	 * @throws IOException 
+	 * @throws HbcsoftException 
+	 * */
+	List<Resource> getResourceByParentId(Long resourceId,Long uid)throws HbcsoftException, IOException;
+	/**
+	  * 根据角色id查询资源列表
+	  * @param roleId
+	  * @throws HbcsoftException
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws IOException 
+	  */
+	List<Resource> queryResourceListbyRoleId(final String roleId,final String companyId) throws HbcsoftException, InstantiationException, IllegalAccessException, IOException;
+	/**
+	 * 资源菜单
+	 * @throws HbcsoftException
+	 * @throws IOException 
+	 */
+	List<TreeNode> findResourceMenu(final String companyId) throws HbcsoftException, IOException;
+	/**
+	 * 根据资源id查询
+	 * @throws HbcsoftException
+	 */
+	Resource queryResById(final String resourceId) throws HbcsoftException;
+	/**
+	 * 获取树形菜单节点
+	 * @throws HbcsoftException
+	 */
+	/**
+	 * 资源菜单
+	 * @throws HbcsoftException
+	 * @throws IOException 
+	 */
+	List<Resource> findResource(final String companyId) throws HbcsoftException, IOException;
+}

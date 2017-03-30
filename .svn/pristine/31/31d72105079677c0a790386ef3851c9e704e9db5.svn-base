@@ -1,0 +1,110 @@
+package com.hbcsoft.zdy.common;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.yaja.common.constant.YAJAConstant;
+import com.yaja.common.entity.ColumnObject;
+
+public class ComConstant extends YAJAConstant {
+	public final static int EDITTYPE_DEFAULT = 0;
+	public final static int EDITTYPE_ADD = 1;
+	public final static int EDITTYPE_MODIFY = 2;
+	public final static int EDITTYPE_SHOW = 3;
+	public final static int EDITTYPE_REVIEWED_01 = 4;
+	public final static int EDITTYPE_REVIEWED_02 = 5;
+	public final static int EDITTYPE_REVIEWED_03 = 6;
+	public final static int EDITTYPE_REVIEWED_04 = 7;
+	public final static int EDITTYPE_REVIEWED_05 = 8;
+	public final static int EDITTYPE_REVIEWED_06 = 9;
+	public final static int EDITTYPE_REVIEWED_07 = 10;
+	public final static int EDITTYPE_REVIEWED_08 = 11;
+	public final static int EDITTYPE_REVIEWED_09 = 12;
+	public final static int EDITTYPE_REVIEWED_10 = 13;
+	public final static int EDITTYPE_REVIEWED_11 = 14;
+	public final static int EDITTYPE_REVIEWED_12 = 15;
+	public final static int EDITTYPE_REVIEWED_13 = 16;
+	public final static int EDITTYPE_REVIEWED_14 = 17;
+	public final static int EDITTYPE_REVIEWED_15 = 18;
+	public final static int EDITTYPE_REVIEWED_16 = 19;
+	public final static int EDITTYPE_REVIEWED_17 = 20;
+	public final static int EDITTYPE_REVIEWED_18 = 21;
+	public final static int EDITTYPE_REVIEWED_19 = 22;
+	public final static int EDITTYPE_REVIEWED_20 = 23;
+	
+	public final static int R_C_T_G = 0;
+	public final static int R_C_T_D = 1;
+	public final static String R_C_T_D_DIC = "H_";
+	public final static String R_C_T_D_SYS = "B_";
+	public final static String R_C_T_D_CON = "C_";
+	public final static String R_C_T_D_SYS_BUMEN = "BUMEN";
+	public final static String R_C_T_D_SYS_RENYUAN = "RENYUAN";
+	public final static String R_C_T_D_SYS_JUESE = "JUESE";
+	public final static String R_C_T_D_CON_NIAN = "NIAN";
+	public final static String R_C_T_D_CON_YUE = "YUE";
+	public final static String R_C_T_D_CON_RI = "RI";
+	
+	public final static Map<String, ColumnObject> COKUMN_M_M = new HashMap<String, ColumnObject>();
+	public final static Map<String, ColumnObject> COKUMN_M_S = new HashMap<String, ColumnObject>();
+	public final static Map<String, ColumnObject> COKUMN_M_O = new HashMap<String, ColumnObject>();
+
+	public final static String COLUMN_TYPE_TEXT = "COLUMN_TYPE_TEXT";
+	public final static String COLUMN_TYPE_DATE = "COLUMN_TYPE_DATE";
+	public final static String COLUMN_TYPE_DATETIME = "COLUMN_TYPE_DATETIME";
+	public final static String COLUMN_TYPE_TIMESTAMP = "COLUMN_TYPE_TIMESTAMP";
+	public final static String COLUMN_TYPE_BIT = "COLUMN_TYPE_BIT";
+	public final static String COLUMN_TYPE_INT = "COLUMN_TYPE_INT";
+	public final static String COLUMN_TYPE_BIGINT = "COLUMN_TYPE_BIGINT";
+	public final static String COLUMN_TYPE_NUMERIC = "COLUMN_TYPE_NUMERIC";
+	public final static String COLUMN_TYPE_TEXTAREA = "COLUMN_TYPE_TEXTAREA";
+	
+	public final static String ID = "ID";
+	public final static String ZID = "ZID";
+	public final static String COMPANYID = "COMPANYID";
+	public final static String FORMTYPE = "FORMTYPE";
+	
+	public final static String mavList = "list";
+	public final static String paraCurrentPage = "currentPage";
+	public final static String paraMainName = "mainName";
+	public final static String paraMainId = "mainId";
+	public final static String paraMemo = "memo";
+	
+	public final static String inputName = "<input type='text' id='";
+	public final static String strValue = "' value='";
+	public final static String strName = "' name='";
+	public final static String strLabel = "<label for='drive' class='control-label col-lg-3 col-md-3 col-sm-3'>";
+	public final static String strEndLabel = "</label>";
+	public final static String strDivClass = "<div class='col-lg-9 col-md-9 col-sm-8'>";
+	
+	static {
+		COKUMN_M_M.put(COLUMN_TYPE_TEXT, new ColumnObject("VARCHAR", 1));
+		COKUMN_M_M.put(COLUMN_TYPE_DATE, new ColumnObject("DATE", 0));
+		COKUMN_M_M.put(COLUMN_TYPE_DATETIME, new ColumnObject("TIME", 0));
+		COKUMN_M_M.put(COLUMN_TYPE_TIMESTAMP, new ColumnObject("DATETIME", 0));
+		COKUMN_M_M.put(COLUMN_TYPE_BIT, new ColumnObject("BIT", 0));
+		COKUMN_M_M.put(COLUMN_TYPE_INT, new ColumnObject("INT", 0));
+		COKUMN_M_M.put(COLUMN_TYPE_BIGINT, new ColumnObject("BIGINT", 0));
+		COKUMN_M_M.put(COLUMN_TYPE_NUMERIC, new ColumnObject("NUMERIC", 2));
+		COKUMN_M_M.put(COLUMN_TYPE_TEXTAREA, new ColumnObject("TEXT", 0));
+
+		COKUMN_M_S.put(COLUMN_TYPE_TEXT, new ColumnObject("VARCHAR", 1));
+		COKUMN_M_S.put(COLUMN_TYPE_DATE, new ColumnObject("DATE", 0));
+		COKUMN_M_S.put(COLUMN_TYPE_DATETIME, new ColumnObject("TIME", 0));
+		COKUMN_M_S.put(COLUMN_TYPE_TIMESTAMP, new ColumnObject("DATETIME", 0));
+		COKUMN_M_S.put(COLUMN_TYPE_BIT, new ColumnObject("BIT", 0));
+		COKUMN_M_S.put(COLUMN_TYPE_INT, new ColumnObject("INT", 0));
+		COKUMN_M_S.put(COLUMN_TYPE_BIGINT, new ColumnObject("BIGINT", 0));
+		COKUMN_M_S.put(COLUMN_TYPE_NUMERIC, new ColumnObject("NUMERIC", 2));
+		COKUMN_M_S.put(COLUMN_TYPE_TEXTAREA, new ColumnObject("TEXT", 0));
+		
+		COKUMN_M_O.put(COLUMN_TYPE_TEXT, new ColumnObject("VARCHAR", 1));
+		COKUMN_M_O.put(COLUMN_TYPE_DATE, new ColumnObject("DATE", 0));
+		COKUMN_M_O.put(COLUMN_TYPE_DATETIME, new ColumnObject("TIME", 0));
+		COKUMN_M_O.put(COLUMN_TYPE_TIMESTAMP, new ColumnObject("DATETIME", 0));
+		COKUMN_M_O.put(COLUMN_TYPE_BIT, new ColumnObject("BIT", 0));
+		COKUMN_M_O.put(COLUMN_TYPE_INT, new ColumnObject("INT", 0));
+		COKUMN_M_O.put(COLUMN_TYPE_BIGINT, new ColumnObject("BIGINT", 0));
+		COKUMN_M_O.put(COLUMN_TYPE_NUMERIC, new ColumnObject("NUMERIC", 2));
+		COKUMN_M_O.put(COLUMN_TYPE_TEXTAREA, new ColumnObject("TEXT", 0));
+    }
+}

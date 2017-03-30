@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>查询页面</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width-device-width,initial-scale-1.0">
+<link rel="stylesheet" href="../../css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<form action="method" role="form" class="form-horizontal">
+				<h3>查询页面</h3>
+				<hr>
+				<div class="btn-group">
+					<a href="#" class="btn btn-default zsgc">添加</a> <a href="#"
+						class="btn btn-default zsgc">删除</a> <a href="#"
+						class="btn btn-default zsgc">修改</a> <a href="#"
+						class="btn btn-default zsgc">查询</a>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">输入框</span>
+							<input type="text" class="formcontrol">
+						</label>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">下拉框</span>
+							<select name="" class="formcontrol">
+								<option value="">1</option>
+								<option value="">2</option>
+								<option value="">3</option>
+								<option value="">4</option>
+								<option value="">5</option>
+								<option value="">6</option>
+								<option value="">7</option>
+								<option value="">8</option>
+						</select>
+						</label>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">金额</span>
+							<div class="inputgroup">
+								<input type="text" class="formcontrol"> <span
+									class="qujian">至</span> <input type="text" class="formcontrol">
+							</div>
+						</label>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">日期</span>
+							<div class="inputgroup">
+								<input type="text" class="formcontrol Wdate"
+									onfocus='WdatePicker({dateFmt:"yyyy-MM-dd"})'> <span
+									class="qujian">至</span> <input type="text"
+									class="formcontrol Wdate"
+									onfocus='WdatePicker({dateFmt:"yyyy-MM-dd"})'>
+							</div>
+						</label>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">点选</span>
+							<div class="inputgroup">
+								<input type="text" class="formcontrol" id="dianxuankuang">
+								<span class="dianxuan" data-toggle="modal"
+									data-target="#dianxuan"><span
+									class="glyphicon glyphicon-zoom-in"></span></span>
+							</div>
+						</label>
+						<div class="modal fade" id="dianxuan" tabindex="-1" role="dialog"
+							aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog dianxuankuang">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-hidden="true">&times;</button>
+										<h4 class="modal-title" id="myModalLabel">这是一个标题需要的自己改</h4>
+									</div>
+									<div class="modal-body dianxuanbody">
+										<div class="row">
+											<div class="table-responsive">
+												<table
+													class="table table-bordered table-striped table-hover formtable"
+													id="xzbdzdb" style="width: 150%;">
+													<thead>
+														<tr>
+															<th class="check"><input type="checkbox"></th>
+															<th>表单名称</th>
+															<th>字段名称</th>
+															<th>字段标题</th>
+															<th>是否显示</th>
+															<th>字段类型</th>
+															<th>下拉框状态</th>
+															<th>内容</th>
+															<th>是否为查询条件</th>
+															<th>是否在查询列显示</th>
+															<th>是否显示列</th>
+															<th>是否可修改</th>
+															<th>默认值</th>
+															<th>字段排列顺序</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td class="check"><input type="checkbox"></td>
+															<td><input type="text" class="form-control"
+																disabled="disabled"></td>
+															<td><input type="text" class="form-control"
+																disabled="disabled"></td>
+															<td><input type="text" class="form-control"></td>
+															<td><input type="text" class="form-control"></td>
+															<td><select class="form-control">
+																	<option>输入框</option>
+																	<option>下拉框</option>
+																	<option>按钮</option>
+																	<option>多选框</option>
+																	<option>点选</option>
+																	<option>日期</option>
+																	<option>文本域</option>
+																	<option>金额</option>
+															</select></td>
+															<td><select class="form-control">
+																	<option>是</option>
+																	<option selected="selected">否</option>
+															</select></td>
+															<td><select class="form-control">
+																	<option>是</option>
+																	<option>否</option>
+															</select></td>
+															<td><select class="form-control">
+																	<option>是</option>
+																	<option selected="selected">否</option>
+															</select></td>
+															<td><select class="form-control">
+																	<option>是</option>
+																	<option>否</option>
+															</select></td>
+															<td><select class="form-control">
+																	<option>是</option>
+																	<option selected="selected">否</option>
+															</select></td>
+															<td><select class="form-control">
+																	<option>是</option>
+																	<option>否</option>
+															</select></td>
+															<td><input type="text" class="form-control"></td>
+															<td><input type="text" class="form-control"></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default"
+											data-dismiss="modal">关闭</button>
+										<button type="button" class="btn btn-primary">确定</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">多选框</span>
+							<select multiple class="formcontrol">
+								<option value="">1</option>
+								<option value="">2</option>
+								<option value="">3</option>
+								<option value="">4</option>
+								<option value="">5</option>
+								<option value="">6</option>
+								<option value="">7</option>
+								<option value="">8</option>
+						</select>
+						</label>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="" class="labeltxt"> <span class="title">文本域</span>
+							<textarea class="formcontrol" row="2"></textarea>
+						</label>
+					</div>
+				</div>
+			</form>
+			<div class="panel panel-primary">
+				<div class="panel-heading both">
+					<!-- <h3 class="panel-title">表单名称</h3> -->
+				</div>
+				<div class="panel-body">
+					<div class="table-responsive verywidth">
+						<table
+							class="table table-bordered table-striped table-hover formtable">
+							<thead>
+								<tr class="active">
+									<th class="check"><input type="checkbox" checked
+										id="checkAll"></th>
+									<th>序号</th>
+									<th>表单名称</th>
+									<th>路径</th>
+									<th>提交方式</th>
+									<th>表单类型</th>
+									<th>版本号</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="check"><input type="checkbox" checked=""></td>
+									<td>1</td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/html5shiv.min.js"></script>
+	<script src="../..//My97DatePicker/WdatePicker.js"></script>
+	<script src="../../js/bootstrap/bootstrap.min.js"></script>
+	<script>
+		$(".table tr").slice(1).each(function(){
+			var p = this;  
+			$(this).children().slice(1).click(function(){  
+				$($(p).children()[0]).children().each(function(){  
+					if(this.type=="checkbox"){  
+						if(!this.checked){  
+							this.checked = true;  
+						}else{  
+							this.checked = false;  
+						}
+					}
+				});
+			});
+		}); 
+		$(function () {
+            $("#checkAll").click(function () {
+                $("input[type='checkbox']:checkbox").prop("checked", this.checked);
+            });
+        });
+	</script>
+</body>
+</html>

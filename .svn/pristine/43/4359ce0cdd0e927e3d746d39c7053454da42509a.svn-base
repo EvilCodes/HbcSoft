@@ -1,0 +1,789 @@
+package com.hbcsoft.zdy.template.controller;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONArray;
+import com.hbcsoft.common.HBCSoftConstant;
+import com.hbcsoft.error.ErrorConstant;
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.file.excel.ExcelCoordinates;
+import com.hbcsoft.file.excel.WriteDataToExcel;
+import com.hbcsoft.report.entity.ReportConfig;
+import com.hbcsoft.report.entity.ReportConfigSearch;
+import com.hbcsoft.report.entity.ReportHead;
+import com.hbcsoft.report.entity.ReportRow;
+import com.hbcsoft.report.service.ReportConfigService;
+import com.hbcsoft.report.service.ReportHeadService;
+import com.hbcsoft.report.service.ReportRowService;
+import com.hbcsoft.sys.entity.DataDict;
+import com.hbcsoft.sys.entity.Org;
+import com.hbcsoft.sys.entity.OuterDBLinkPara;
+import com.hbcsoft.sys.entity.Role;
+import com.hbcsoft.sys.entity.SessionInfo;
+import com.hbcsoft.sys.entity.User;
+import com.hbcsoft.sys.service.DataDictQueryService;
+import com.hbcsoft.sys.service.OrgService;
+import com.hbcsoft.sys.service.OuterDBLinkParaService;
+import com.hbcsoft.sys.service.RoleService;
+import com.hbcsoft.sys.service.UserService;
+import com.hbcsoft.zdy.common.BaseController;
+import com.hbcsoft.zdy.common.ComConstant;
+import com.hbcsoft.zdy.common.ReportTableCell;
+import com.hbcsoft.zdy.common.RequiredCheckObject;
+import com.hbcsoft.zdy.template.service.ReportService;
+import com.hbcsoft.zdy.util.PubTools;
+import com.hbcsoft.zdy.util.ReportUtil;
+import com.yaja.common.constant.YAJAConstant;
+
+@Controller
+@RequestMapping(value = "/report")
+public class ReportController extends BaseController<ReportController> {
+
+	private transient final static String PAGE_LIST = "template/reportList";
+
+	private transient final static String PARACODE_REPORTID = "reportId";
+	private transient final static String PARACODE_LSTEDIT = "lstEdit";
+	private transient final static String PARACODE_ROWLENGTH = "rowLength";
+	private transient final static String PARACODE_HEADROW = "headRow";
+	private transient final static String PARACODE_FIELDLIST = "fieldList";
+	private transient final static String PARACODE_CHECKPARAMETER = "checkParameter";
+	
+	@Autowired
+	private transient ReportService reportService;
+	@Autowired
+	private transient ReportConfigService reportConfigService;
+	@Autowired
+	private transient ReportHeadService reportHeadService;
+	@Autowired
+	private transient ReportRowService reportRowService;
+	@Autowired
+	private transient DataDictQueryService dataDictQueryService;
+	@Autowired
+	private transient OrgService orgService;
+	@Autowired
+	private transient UserService userService;
+	@Autowired
+	private transient RoleService roleService;
+	@Autowired
+	private transient OuterDBLinkParaService outerDBLinkParaService;
+	
+	private transient ModelAndView mview = null;
+	
+	private ReportConfig reportConfig;
+	private List<List<Object>> lstData = new ArrayList<List<Object>>();
+	private List<List<ReportTableCell>> lstQueryData = new ArrayList<List<ReportTableCell>>();
+	private List<ReportConfigSearch> lstReportConfigSearch = new ArrayList<ReportConfigSearch>();
+	private List<String> lstStr = new ArrayList<String>();
+	private List<String> lstQuery = new ArrayList<String>();
+	private transient List<ReportHead> head = new ArrayList<ReportHead>();
+	private transient List<ReportRow> row = new ArrayList<ReportRow>();
+	
+	private Long reportId;
+	private Long companyId = 0L;
+	
+	private int headRow = 0;
+	private int rowLength = 0;
+	private String rowCode = "";
+	private String headCode = "";
+	private String checkParameter = "";
+	private String ids = "";
+	private String starDate = "";
+	private String endDate = "";
+	
+	@RequestMapping(value = "/open")
+	public ModelAndView open(final Long reportId) throws HbcsoftException {
+		getLogger().info("=======open====start==");
+		
+		final SessionInfo sessionInfo = (SessionInfo) this.session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		this.companyId = sessionInfo.getCompany().getId();
+		this.reportId = reportId;
+		
+		//根据公司、报表Id查找报表配置
+		getReportConfig();
+		
+		if(this.reportConfig == null)
+		{
+			throw new HbcsoftException(this.getClass().getName(),
+					ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_001);
+		}
+		
+		if(this.reportConfig.getId() == null || this.reportConfig.getId() == 0L)
+		{
+			throw new HbcsoftException(this.getClass().getName(),
+					ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_001);
+		}
+		
+		//查询条件配置
+		this.getReportConfigSearch();
+		
+		lstQueryData.clear();
+		
+		//根据报表配置查询列配置
+		if(this.reportConfig.getHeadType() == 0)
+		{
+			getReportHead();
+		}else{
+			headRow = 0;
+			lstQueryData.add(new ArrayList<>());
+		}
+		
+		//根据报表配置查询行配置
+		if(this.reportConfig.getBodyType() == 0)
+		{
+			getReportRow();
+		}else{
+			rowLength = 0;
+		}
+		
+		if(headRow > 0)
+		{
+			ReportUtil.addFirstCell(lstQueryData, headRow, rowLength==0?1:rowLength);
+		}
+		
+		this.checkParameter = this.getRequired();
+
+		mview = new ModelAndView(PAGE_LIST);
+		mview.getModel().put(PARACODE_HEADROW, headRow);
+		mview.getModel().put(PARACODE_ROWLENGTH, rowLength);
+		mview.getModel().put(PARACODE_FIELDLIST, lstQueryData);
+		mview.getModel().put(PARACODE_LSTEDIT, lstReportConfigSearch);
+		mview.getModel().put(PARACODE_REPORTID, reportId);
+		mview.getModel().put(PARACODE_CHECKPARAMETER, checkParameter);
+		getLogger().info("=======open====end==");
+		return mview;
+	}
+	
+	@RequestMapping(value = "/query")
+	public ModelAndView query() throws HbcsoftException {
+		getLogger().info("=======query====start==");
+
+		try {
+			final SessionInfo sessionInfo = (SessionInfo) this.session.getAttribute(HBCSoftConstant.SESSIONINFO);
+			this.companyId = sessionInfo.getCompany().getId();
+
+			// 根据公司、报表Id查找报表配置
+			getReportConfig();
+			
+			if(this.reportConfig == null)
+			{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_001);
+			}
+			
+			if(this.reportConfig.getId() == null || this.reportConfig.getId() == 0L)
+			{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_001);
+			}
+
+			// 查询条件配置
+			this.getReportConfigSearch();
+
+			// 获取查询条件值
+			lstQuery.clear();
+			lstReportConfigSearch.forEach(data -> {
+				setQueryData(data);
+			});
+
+			lstQueryData.clear();
+			
+			// 根据报表配置查询列配置
+			getReportHead();
+
+			// 根据报表配置查询行配置
+			getReportRow();
+			
+			ReportUtil.addFirstCell(lstQueryData, headRow, rowLength);
+			
+			final List<List<Object>> lstResult = this.getListData();
+			ReportUtil.formatQueryData(lstResult, lstQueryData, headRow, rowLength);
+			
+			this.checkParameter = this.getRequired();
+
+			mview = new ModelAndView(PAGE_LIST);
+			mview.getModel().put(PARACODE_HEADROW, headRow);
+			mview.getModel().put(PARACODE_ROWLENGTH, rowLength);
+			mview.getModel().put(PARACODE_FIELDLIST, lstQueryData);
+			mview.getModel().put(PARACODE_LSTEDIT, lstReportConfigSearch);
+			mview.getModel().put(PARACODE_REPORTID, reportId);
+			mview.getModel().put(PARACODE_CHECKPARAMETER, checkParameter);
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		getLogger().info("=======query====end==");
+		return mview;
+	}
+	
+	/**
+	 * 根据模板导出数据到复制模板中
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 * @author songliang
+	 * @throws UnsupportedEncodingException 
+	 * @throws ParseException 
+	 * @throws HbcsoftException 
+	 * @since 2016-12-23
+	 */
+	@RequestMapping(value = "/exportExcel",method={RequestMethod.GET,RequestMethod.POST})
+	public String getExcelDemo() throws UnsupportedEncodingException, HbcsoftException, ParseException {
+		
+		final SessionInfo sessionInfo = (SessionInfo) this.session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		this.companyId = sessionInfo.getCompany().getId();
+
+		// 根据公司、报表Id查找报表配置
+		getReportConfig();
+		
+		if(this.reportConfig == null)
+		{
+			throw new HbcsoftException(this.getClass().getName(),
+					ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_001);
+		}
+		
+		if(this.reportConfig.getId() == null || this.reportConfig.getId() == 0L)
+		{
+			throw new HbcsoftException(this.getClass().getName(),
+					ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_001);
+		}
+
+		// 查询条件配置
+		this.getReportConfigSearch();
+
+		// 获取查询条件值
+		lstQuery.clear();
+		lstReportConfigSearch.forEach(data -> {
+			setQueryData(data);
+		});
+
+		// 根据报表配置查询列配置
+		if (this.reportConfig.getHeadType() != 0) {
+			getReportHead();
+		}
+
+		// 根据报表配置查询行配置
+		if (this.reportConfig.getBodyType() != 0) {
+			getReportRow();
+		}
+		final List<List<Object>> lstResult = this.getListData();
+
+		if (this.reportConfig.getBodyType() != 0) {
+			ReportUtil.formatExcleRowData(lstResult, row);
+		}
+		lstData.clear();
+		ReportUtil.formatExcleData(lstResult, lstStr, reportConfig.getBodyType() != 0, lstData);		
+		
+		final ExcelCoordinates ec = new ExcelCoordinates();
+		ec.setStartRow(reportConfig.getStartRow());
+		ec.setStartColumn(reportConfig.getStartColumn());
+//		ec.setSpecialRow(reportConfig.getSpecialRow());
+//		ec.setSpecialColumn(reportConfig.getSpecialColumn());
+		
+		ec.setMainTitleStartRow(reportConfig.getMainTitleStartRow());
+		ec.setMainTitleStartColumn(reportConfig.getMainTitleStartColumn());
+		ec.setSubtitleStartRow(reportConfig.getSubtitleStartRow());
+		ec.setSubtitleStartColumn(reportConfig.getSubtitleStartColumn());
+		
+		String mainTitle = this.getMainTitle(lstReportConfigSearch, companyId);
+		String date = "时间("+starDate+"至"+endDate+")";
+		
+		OutputStream  fos = null;
+		
+		final String agent = request.getHeader("USER-AGENT").toLowerCase();
+		final String fileName = reportConfig.getReportName();
+		final String codedFileName = java.net.URLEncoder.encode(fileName, "UTF-8");
+		final String path = this.session.getServletContext().getRealPath("/"+reportConfig.getExcelUrl());
+		try {
+			final WriteDataToExcel wdte = new WriteDataToExcel();
+			final XSSFWorkbook wb = wdte.writeData(ec, lstData, path,mainTitle,date);
+			response.setContentType("application/vnd.ms-excel");
+			if (agent.contains("firefox")) {
+				response.setCharacterEncoding("utf-8");
+				response.setHeader("content-disposition", "attachment;filename=" + new String(fileName.getBytes(), "ISO8859-1") + ".xlsx");
+			} else {
+				response.setHeader("content-disposition", "attachment;filename=" + codedFileName + ".xlsx");
+			}
+			fos = response.getOutputStream();
+			wb.setForceFormulaRecalculation(true);
+			wb.write(fos);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				if(fos != null){
+					fos.flush();
+					fos.close();
+				}
+			} catch (IOException e) {
+				this.getLogger().info(e);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 获取数据
+	 * @return
+	 * @throws HbcsoftException
+	 * @throws ParseException
+	 */
+	private List<List<Object>> getListData() throws HbcsoftException, ParseException{
+		List<List<Object>> lstData = new ArrayList<List<Object>>();
+		final SessionInfo sessionInfo = (SessionInfo) this.session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		this.companyId = sessionInfo.getCompany().getId();
+		OuterDBLinkPara outerDBLink = outerDBLinkParaService.getOuterDBLinkPara(companyId);
+		
+		lstData = reportService.getDataList(outerDBLink, lstQuery, reportConfig, 
+				lstReportConfigSearch, rowCode, headCode, lstStr);
+		return ReportUtil.formatResult(row, lstData);
+	}
+	/**
+	 * 获取主标题
+	 * @param lstReportConfigSearch
+	 * @param companyId
+	 * @return
+	 * @throws HbcsoftException
+	 */
+	private String getMainTitle(List<ReportConfigSearch> lstReportConfigSearch,long companyId) throws HbcsoftException{
+		String ids = "";
+		String mainTitle="";
+		if(lstReportConfigSearch != null){
+			for(ReportConfigSearch rcs : lstReportConfigSearch){
+				if("chooseOrg".equals(rcs.getClickInfo()) && rcs.getInputType()==HBCSoftConstant.FORM_INPUT_TYPE_4){
+					ids = rcs.getInputValue();
+					break;
+				}
+			}
+			Map<String,Object> map = new HashMap<String,Object>();
+			String [] idsArr = ids.split("[,，]");
+			if(idsArr.length==1){
+				if(idsArr[0]!=null && !"".equals(idsArr[0])){
+					//单个门店
+					mainTitle = orgService.getOrgName(idsArr[0], companyId)+"店利润表";
+				}else{
+					//总门店
+					mainTitle = "西藏绿茶餐饮管理有限公司利润表";
+				}
+			}else{
+				String key = "";
+				for(int i=0; i<idsArr.length; i++){
+					key = idsArr[i].substring(0, 2);
+					map.put(key, idsArr[i]);
+				}
+				if(map.size()==1){
+					//父级门店
+					mainTitle = orgService.getOrgName(key, companyId)+"利润表";
+				}else if(map.size() > 1){
+					//总门店
+					mainTitle = "西藏绿茶餐饮管理有限公司利润表";
+				}
+			}
+			
+		}
+		return mainTitle;
+	}
+	
+	public List<List<Object>> getLstData() {
+		return lstData;
+	}
+
+	public void setLstData(List<List<Object>> lstData) {
+		this.lstData = lstData;
+	}
+
+	public List<List<ReportTableCell>> getLstQueryData() {
+		return lstQueryData;
+	}
+
+	public void setLstQueryData(List<List<ReportTableCell>> lstQueryData) {
+		this.lstQueryData = lstQueryData;
+	}
+
+	public List<ReportConfigSearch> getLstReportConfigSearch() {
+		return lstReportConfigSearch;
+	}
+
+	public void setLstReportConfigSearch(List<ReportConfigSearch> lstReportConfigSearch) {
+		this.lstReportConfigSearch = lstReportConfigSearch;
+	}
+
+	public Long getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(Long reportId) {
+		this.reportId = reportId;
+	}
+
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
+	}
+
+	public int getHeadRow() {
+		return headRow;
+	}
+
+	public void setHeadRow(int headRow) {
+		this.headRow = headRow;
+	}
+
+	public int getRowLength() {
+		return rowLength;
+	}
+
+	public void setRowLength(int rowLength) {
+		this.rowLength = rowLength;
+	}
+
+	public void setReportConfig(ReportConfig reportConfig) {
+		this.reportConfig = reportConfig;
+	}
+
+	private void getReportHead() throws HbcsoftException
+	{
+		if(this.reportConfig.getHeadType() == ComConstant.R_C_T_G)
+		{
+			head = reportHeadService.queryHeadByReportID(companyId, reportId);
+			
+			if(head.isEmpty())
+			{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_002);
+			}
+			
+			headRow = ReportUtil.addHeadConfig(head, lstQueryData);
+			headCode = head.get(0).getField();
+		}else if(this.reportConfig.getHeadType() == ComConstant.R_C_T_D){
+			final String config = this.reportConfig.getHeadConfig();
+			if(config == null || config.length() <= 2)
+			{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_003);
+			}
+
+			headRow = 1;
+			headCode = reportConfig.getHeadFieldName();
+
+			lstStr.clear();
+			if(config.startsWith(ComConstant.R_C_T_D_DIC))
+			{
+				final String type = config.substring(2);
+				final List<DataDict> lstDataDict = dataDictQueryService.getDataDictList(
+						type, null, String.valueOf(companyId));
+				
+				ReportUtil.addHeadDict(lstDataDict, lstQueryData);
+				
+				lstDataDict.forEach(dd -> {
+					lstStr.add(dd.getDictCode());
+				});
+			}else if(config.startsWith(ComConstant.R_C_T_D_SYS))
+			{
+				if((ComConstant.R_C_T_D_SYS + ComConstant.R_C_T_D_SYS_BUMEN).equals(config))
+				{
+					final List<Org> lstOrg = orgService.queryAll(ids, companyId);
+					ReportUtil.addHeadOrg(lstOrg, lstQueryData);
+					
+					lstOrg.forEach(dd -> {
+						lstStr.add(dd.getCode());
+					});
+				}else if((ComConstant.R_C_T_D_SYS + ComConstant.R_C_T_D_SYS_RENYUAN).equals(config))
+				{
+					final List<User> lstUser = userService.queryAll(ids, companyId);
+					ReportUtil.addHeadUser(lstUser, lstQueryData);
+					
+					lstUser.forEach(dd -> {
+						lstStr.add(String.valueOf(dd.getId()));
+					});
+				}else if((ComConstant.R_C_T_D_SYS + ComConstant.R_C_T_D_SYS_JUESE).equals(config))
+				{
+					final List<Role> lstRole = roleService.queryAll(ids, companyId);
+					ReportUtil.addHeadRole(lstRole, lstQueryData);
+					
+					lstRole.forEach(dd -> {
+						lstStr.add(String.valueOf(dd.getId()));
+					});
+				}else{
+					throw new HbcsoftException(this.getClass().getName(),
+							ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_003);
+				}
+			}else if(config.startsWith(ComConstant.R_C_T_D_CON))
+			{
+				if((ComConstant.R_C_T_D_CON + ComConstant.R_C_T_D_CON_NIAN).equals(config))
+				{
+					ReportUtil.addHeadYearMonthDate(starDate, endDate, lstQueryData, lstStr, Calendar.YEAR);
+				}else if((ComConstant.R_C_T_D_CON + ComConstant.R_C_T_D_CON_YUE).equals(config))
+				{
+					ReportUtil.addHeadYearMonthDate(starDate, endDate, lstQueryData, lstStr, Calendar.MONTH);
+				}else if((ComConstant.R_C_T_D_CON + ComConstant.R_C_T_D_CON_RI).equals(config))
+				{
+					ReportUtil.addHeadYearMonthDate(starDate, endDate, lstQueryData, lstStr, Calendar.DATE);
+				}else{
+					throw new HbcsoftException(this.getClass().getName(),
+							ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_003);
+				}
+			}else{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_003);
+			}
+		}
+	}
+	
+	private void getReportRow() throws HbcsoftException
+	{
+		if(this.reportConfig.getBodyType() == ComConstant.R_C_T_G)
+		{
+			row = reportRowService.queryRowByReportID(companyId, reportId);
+			
+			if(row.isEmpty())
+			{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_004);
+			}
+			
+			rowLength = ReportUtil.addRowConfig(row, lstQueryData);
+			rowCode = row.get(0).getFiled();
+		}else if(this.reportConfig.getBodyType() == ComConstant.R_C_T_D){
+			final String config = this.reportConfig.getBodyConfig();
+			if(config == null || config.length() <= 2)
+			{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_004);
+			}
+
+			rowLength = 1;
+			rowCode = reportConfig.getBodyFieldName();
+			
+			row.clear();
+			if(config.startsWith(ComConstant.R_C_T_D_DIC))
+			{
+				final String type = config.substring(2);
+				final List<DataDict> lstDataDict = dataDictQueryService.getDataDictList(
+						type, null, String.valueOf(companyId));
+				
+				ReportUtil.addRowDict(lstDataDict, lstQueryData);
+				
+				lstDataDict.forEach(dd -> {
+					ReportRow data = new ReportRow();
+					data.setHname(dd.getDictName());
+					data.setValue(dd.getDictCode());
+					row.add(data);
+				});
+			}else if(config.startsWith(ComConstant.R_C_T_D_SYS))
+			{
+				if((ComConstant.R_C_T_D_SYS + ComConstant.R_C_T_D_SYS_BUMEN).equals(config))
+				{
+					final List<Org> lstOrg = orgService.queryAll(ids, companyId);
+					ReportUtil.addRowOrg(lstOrg, lstQueryData);
+					
+					lstOrg.forEach(dd -> {
+						ReportRow data = new ReportRow();
+						data.setHname(dd.getName());
+						data.setValue(dd.getCode());
+						row.add(data);
+					});
+				}else if((ComConstant.R_C_T_D_SYS + ComConstant.R_C_T_D_SYS_RENYUAN).equals(config))
+				{
+					final List<User> lstUser = userService.queryAll(ids, companyId);
+					ReportUtil.addRowUser(lstUser, lstQueryData);
+					
+					lstUser.forEach(dd -> {
+						ReportRow data = new ReportRow();
+						data.setHname(dd.getName());
+						data.setValue(String.valueOf(dd.getId()));
+						row.add(data);
+					});
+				}else if((ComConstant.R_C_T_D_SYS + ComConstant.R_C_T_D_SYS_JUESE).equals(config))
+				{
+					final List<Role> lstRole = roleService.queryAll(ids, companyId);
+					ReportUtil.addRowRole(lstRole, lstQueryData);
+					
+					lstRole.forEach(dd -> {
+						ReportRow data = new ReportRow();
+						data.setHname(dd.getName());
+						data.setValue(String.valueOf(dd.getId()));
+						row.add(data);
+					});
+				}else{
+					throw new HbcsoftException(this.getClass().getName(),
+							ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_004);
+				}
+			}else if(config.startsWith(ComConstant.R_C_T_D_CON))
+			{
+				List<String> lstRow = new ArrayList<String>();
+				if((ComConstant.R_C_T_D_CON + ComConstant.R_C_T_D_CON_NIAN).equals(config))
+				{
+					ReportUtil.addRowYearMonthDate(starDate, endDate, lstQueryData, lstRow, Calendar.YEAR);
+				}else if((ComConstant.R_C_T_D_CON + ComConstant.R_C_T_D_CON_YUE).equals(config))
+				{
+					ReportUtil.addRowYearMonthDate(starDate, endDate, lstQueryData, lstRow, Calendar.MONTH);
+				}else if((ComConstant.R_C_T_D_CON + ComConstant.R_C_T_D_CON_RI).equals(config))
+				{
+					ReportUtil.addRowYearMonthDate(starDate, endDate, lstQueryData, lstRow, Calendar.DATE);
+				}else{
+					throw new HbcsoftException(this.getClass().getName(),
+							ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_004);
+				}
+				
+				lstRow.forEach(dd -> {
+					ReportRow data = new ReportRow();
+					data.setHname(dd);
+					data.setValue(dd);
+					row.add(data);
+				});
+			}else{
+				throw new HbcsoftException(this.getClass().getName(),
+						ErrorConstant.WARNING_CODE, ErrorConstant.TEMPLATE_REPORT_004);
+			}
+		}
+	}
+	
+	private void getReportConfig() throws HbcsoftException
+	{
+		this.reportConfig = reportConfigService.selectIDConfig(
+				String.valueOf(reportId), this.companyId);
+	}
+	
+	private void getReportConfigSearch() throws HbcsoftException
+	{
+		this.lstReportConfigSearch = reportConfigService.selectConfigSearch(
+				String.valueOf(reportId), this.companyId);
+	}
+
+	private void setQueryData(final ReportConfigSearch ffields) {
+		// 类型：0：输入框 1：下拉框 2：按钮 3：多选框 4：点选 5:日期 6：文本域 7：金额
+		switch (ffields.getInputType()) {
+		case HBCSoftConstant.FORM_INPUT_TYPE_0:
+		case HBCSoftConstant.FORM_INPUT_TYPE_6:
+			ffields.setInputValue(this.request.getParameterMap().get(ffields.getReportSearchName())[0]);
+			
+			if(!PubTools.isEmpty(ffields.getInputValue()))
+			{
+				lstQuery.add(ffields.getReportSearchName() + " like " + "'%" + ffields.getInputValue() + "%'");
+			}
+			
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_4:
+			ffields.setInputValue(this.request.getParameterMap().get(ffields.getReportSearchName())[0]);
+			ffields.setClickValue(this.request.getParameterMap().get(ffields.getReportSearchName() + HBCSoftConstant.CLICK)[0]);
+			this.ids = ffields.getInputValue();
+			
+			if(!PubTools.isEmpty(ffields.getInputValue()))
+			{
+				final String[] arr = ffields.getInputValue().split(ComConstant.CHARACTER_COMMA);
+				final StringBuffer sb = new StringBuffer(32);
+				
+				for(int index = 0; index < arr.length; index++)
+				{
+					if(index == 0)
+					{
+						sb.append(ffields.getReportSearchName() + " in " + "(" + "'" + arr[index] + "'");
+					}else{
+						sb.append(ComConstant.CHARACTER_COMMA + "'" + arr[index] + "'");
+					}
+					
+					if(index == arr.length -1)
+					{
+						sb.append(")");
+						lstQuery.add(sb.toString());
+					}
+				}
+			}
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_2:
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_5:
+		case HBCSoftConstant.FORM_INPUT_TYPE_7:
+			ffields.setStartValue(this.request.getParameterMap().get(ffields.getReportSearchName() + HBCSoftConstant.START)[0]);
+			ffields.setEndValue(this.request.getParameterMap().get(ffields.getReportSearchName() + HBCSoftConstant.END)[0]);
+			
+			this.starDate = ffields.getStartValue();
+			this.endDate = ffields.getEndValue();
+
+			lstQuery.add(ffields.getReportSearchName() + " BETWEEN " + "'" + ffields.getStartValue() + "'" + " AND " 
+					+ "'"+ ffields.getEndValue()+ "'" );
+			
+			break;
+		case HBCSoftConstant.FORM_INPUT_TYPE_1:
+		case HBCSoftConstant.FORM_INPUT_TYPE_3:
+			final String[] arr = this.request.getParameterMap().get(ffields.getReportSearchName());
+			if(PubTools.chkEmpty(arr))
+			{
+				ffields.setInputValue("");
+			}else{
+				final StringBuffer sb = new StringBuffer(32);
+				sb.append(arr[0]);
+				for(int index = 1; index < arr.length; index++)
+				{
+					sb.append(YAJAConstant.CHARACTER_COMMA).append(arr[index]);
+				}
+				ffields.setInputValue(sb.toString());
+			}
+			this.ids = ffields.getInputValue();
+			
+			if(!PubTools.isEmpty(ffields.getInputValue()))
+			{
+				final String[] arrf = ffields.getInputValue().split(ComConstant.CHARACTER_COMMA);
+				final StringBuffer sb = new StringBuffer(32);
+				
+				for(int index = 0; index < arr.length; index++)
+				{
+					if(index == 0)
+					{
+						sb.append(ffields.getReportSearchName() + " in " + "(" + "'" + arrf[index] + "'");
+					}else{
+						sb.append(ComConstant.CHARACTER_COMMA + "'" + arrf[index] + "'");
+					}
+					
+					if(index == arr.length -1)
+					{
+						sb.append(")");
+						lstQuery.add(sb.toString());
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private String getRequired()
+	{
+		List<RequiredCheckObject> obj = new ArrayList<RequiredCheckObject>();
+		RequiredCheckObject rco = new RequiredCheckObject();
+		rco.setFieldName("dbill_dateStart");
+		rco.setTitleName("制单日期");
+		rco.setMessage("请输入制单日期开始结束时间！");
+		obj.add(rco);
+		
+		rco = new RequiredCheckObject();
+		rco.setFieldName("dbill_dateEnd");
+		rco.setTitleName("制单日期");
+		rco.setMessage("请输入制单日期开始结束时间！");
+		obj.add(rco);
+		
+		return JSONArray.toJSONString(obj);
+	}
+}

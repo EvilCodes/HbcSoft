@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	<!-- description用来添加对taglib(标签库)的描述 -->
+	<description>自定义标签库</description>
+	<!--taglib(标签库)的版本号 -->
+	<tlib-version>1.0</tlib-version>
+	<short-name>SelfTagLibrary</short-name>
+	<!-- 为自定义标签库设置一个uri，uri以/开头，/后面的内容随便写，如这里的/gacl ， 在Jsp页面中引用标签库时，需要通过uri找到标签库 
+		在Jsp页面中就要这样引入标签库：<%@taglib uri="/self" prefix="self"%> -->
+	<uri>/simpleTag</uri>
+
+	<!--一个taglib(标签库)中包含多个自定义标签，每一个自定义标签使用一个tag标记来描述 -->
+	<!-- 一个tag标记对应一个自定义标签 -->
+	<tag>
+		<!-- 标签名 -->
+		<name>simple</name>
+		<!-- 标签处理器类 -->
+		<tag-class>com.hbcsoft.tag.SimpleTagDemo</tag-class>
+		<!-- 标签体允许的内容 -->
+		<body-content>scriptless</body-content>
+
+		<attribute>
+			<description>传递表头名称的值</description>
+			<name>titleField</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递name属性值</description>
+			<name>nameField</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递属性字段值</description>
+			<name>valueField</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递字段是否显示值</description>
+			<name>inputIsDisplay</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递table标签id值</description>
+			<name>tableId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递thead标签id值</description>
+			<name>theadId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递tbody标签id值</description>
+			<name>tbodyId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递titleList值</description>
+			<name>titleList</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递fieldList值</description>
+			<name>fieldList</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>传递class值</description>
+			<name>className</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>是否显示复选框列</description>
+			<name>checkboxDisplay</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>全选复选框id</description>
+			<name>checkboxId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>复选框name</description>
+			<name>checkboxName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>

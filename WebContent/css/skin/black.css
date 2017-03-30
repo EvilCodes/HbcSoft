@@ -1,0 +1,116 @@
+﻿header{
+	border-bottom: 5px solid #222;
+}
+/*头部导航划过样式*/
+#pc .nav > li > a:focus, #pc .nav > li > a:hover{
+	color: #222;
+}
+/*导航元素样式*/
+section #aside{
+	background: #222;
+	border: 4px solid #f6f6f6;
+	border-bottom: 0;
+}
+/*一级导航元素样式*/
+#aside ul.subnav li a{
+	color: #f6f6f6;
+	border-bottom: 1px solid #111;
+	border-top: 1px solid #333;
+}
+/*二级导航元素样式*/
+#aside ul.subnav li ul.menu{
+	background: #333;
+}
+#aside ul.menu li a{
+	border-bottom: 1px solid #222;
+	border-top: 1px solid #444;
+}
+/*三级导航元素样式*/
+#aside ul.subnav li ul.menu li .submenu{
+	background: #444;
+}
+#aside ul.submenu li a{
+	border-bottom: 1px solid #333;
+	border-top: 1px solid #555;
+}
+/*导航元素折叠背景*/
+.inactive{
+	background: url(../../image/off1.png) no-repeat 175px center;
+}
+/*被选中导航元素背景*/
+.navActive{
+	background: #111 url(../../image/on1.png) no-repeat 175px center;
+}
+.menuActive{
+	background: #222 url(../../image/on1.png) no-repeat 175px center;
+}
+.submenuActives{
+	background: #333 url(../../image/on1.png) no-repeat 175px center;
+}
+/*面板样式*/
+.panel-primary{
+	border-color: #222;
+}
+.panel-primary > .panel-heading{
+	background-color: #222;
+	border-color: #222;
+}
+/*删行按钮*/
+.delline{
+	border: 1px solid #222;
+	background: #222;
+}
+.delline:hover{
+	border: 1px solid #222;
+	color: #222;
+}
+/**/
+.dl-item ol li a:hover{
+	color: #222;
+}
+.mainTitlet{
+	background: #222;
+}
+.btn-primary{
+	background: #222;
+	border-color:#222;
+}
+.pages>.pagination>.page>a{
+	color: #222;
+}
+.pages>.pagination>.active>a{
+	background-color: #222;
+	border-color: #222;
+	color: #fff;
+}
+.pages>.pagination>li>a.first,.pages>.pagination>li>a.pre,.pages>.pagination>li>a.next,.pages>.pagination>li>a.last{
+	color: #222;
+}
+.pages>.pagination>li.disabled>a{
+	color: #999;
+}
+.formcontrol:focus {
+	border-color: #222;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(34, 34, 34, .6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(34, 34, 34, .6);
+}
+.form-control:focus {
+	border-color: #222;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(34, 34, 34, .6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(34, 34, 34, .6);
+}
+.btn-primary{
+	background: #222;
+	border-color: #110516;
+}
+.btn-primary:active,
+.btn-primary:hover {
+	background-color: #110516;
+	border-color: #110516;
+}
+.btn-primary:active:hover{
+	background-color: #110516;
+	border-color: #110516;
+}

@@ -1,0 +1,242 @@
+package com.hbcsoft.sys.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.sys.dao.DataDictDaoImp;
+import com.hbcsoft.sys.entity.DataDict;
+import com.hbcsoft.zdy.common.HbcsoftCache;
+import com.hbcsoft.zdy.common.HbcsoftJT;
+import com.hbcsoft.zdy.common.LogBaseClass;
+import com.hbcsoft.zdy.util.PubTools;
+
+/**
+ * 数据字典 DataDictQueryServiceImp
+ * 
+ * @author Administrator
+ *
+ */
+@Transactional
+@Service("DataDictQueryService")
+public class DataDictQueryServiceImp extends
+		LogBaseClass<DataDictQueryServiceImp> implements DataDictQueryService {
+	/**
+	 * HbcsoftJT
+	 */
+	@Autowired
+	private transient HbcsoftJT jt;
+	/**
+	 * 数据字典 DataDictDaoImp
+	 */
+	@Autowired
+	private transient DataDictDaoImp dataDictDao;
+
+	/**
+	 * 字典类型 DictTypeDaoImp
+	 */
+	//@Autowired
+	//private transient DictTypeDaoImp dictTypeDao;
+
+	/**
+	 * 查询所有的数据
+	 */
+	@Override
+	public List<DataDict> queryAll(final DataDict dd, final String dtId,
+			final String companyId) {
+		this.getLogger().info("============queryAll=========start==");
+		final List<String> params = new ArrayList<String>();
+		final String sql = HbcsoftCache.getSqlValue("dataDict_queryAll");
+		final StringBuilder sb= new StringBuilder(sql);
+		params.add(companyId);
+		if (dtId != null && !"".equals(dtId)) {
+			sb.append(" AND dtId = ?");
+			//sql += " AND dtId = ?";
+			params.add(dtId);
+		}
+		if (dd.getDictCode() != null && !"".equals(dd.getDictCode())) {
+			sb.append(" AND dictCode like  ?");
+			//sql += " AND dictCode like  ?";
+			params.add("%" + dd.getDictCode() + "%");
+		}
+		if (dd.getDictName() != null && !"".equals(dd.getDictName())) {
+			sb.append(" AND dictName like  ?");
+			//sql += " AND dictName like  ?";
+			params.add("%" + dd.getDictName() + "%");
+		}
+		sb.append("  ORDER BY SORT ");
+		//sql += "  ORDER BY SORT ";
+		final List<DataDict> list = this.returnListCount(params, sb.toString());
+		this.getLogger().info("============queryAll=========end==");
+		return list;
+	}
+
+	/**
+	 * 分页查询
+	 */
+	@Override
+	public List<DataDict> queryAllDataDict(final DataDict dd,
+			final String dtId, final String companyId, final int startRow,
+			final int pageSize) {
+		this.getLogger().info("============queryAllDataDict=========start==");
+		final List<String> params = new ArrayList<String>();
+		final String sql = HbcsoftCache.getSqlValue("dataDict_queryAll");
+		final StringBuilder sb = new StringBuilder(sql);
+		params.add(companyId);
+		if (dtId != null && !"".equals(dtId)) {
+			sb.append(" AND dtId = ?");
+			//sql += " AND dtId = ?";
+			params.add(dtId);
+		}
+		if (dd.getDictCode() != null && !"".equals(dd.getDictCode())) {
+			sb.append(" AND dictCode like  ?");
+			//sql += " AND dictCode like  ?";
+			params.add("%" + dd.getDictCode() + "%");
+		}
+		if (dd.getDictName() != null && !"".equals(dd.getDictName())) {
+			sb.append(" AND dictName like  ?");
+			//sql += " AND dictName like  ?";
+			params.add("%" + dd.getDictName() + "%");
+		}
+		sb.append("  ORDER BY SORT ");
+		//sql += "  ORDER BY SORT ";
+
+		// List<DataDict> list = new ArrayList<DataDict>();
+		final List<DataDict> list = this.returnListCount(params, sb.toString(), startRow,
+				pageSize);
+		this.getLogger().info("============queryAllDictType=========end==");
+		return list;
+	}
+
+	private List<DataDict> returnListCount(final List<String> params,
+			final String sql) {// 行
+		List<DataDict> list = new ArrayList<DataDict>();
+		final boolean paramsize = params.isEmpty();
+		final boolean pars = params == null;
+		try {
+			if (paramsize || pars) {
+				list = (List<DataDict>) dataDictDao.queryAll(sql, jt,
+						params.toArray(new Object[params.size()]));//new String[params.size()]
+			} else {
+				list = (List<DataDict>) dataDictDao.queryAll(sql, jt,
+						params.toArray(new Object[params.size()]));//new String[params.size()]
+			}
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return list;
+	}
+
+	private List<DataDict> returnListCount(final List<String> params,
+			final String sql, final int startRow, final int pageSize) {// 分页
+		List<DataDict> list = new ArrayList<DataDict>();
+		final boolean paramsize = params.isEmpty();
+		final boolean pars = params == null;
+		try {
+			if (paramsize || pars) {
+				list = (List<DataDict>) dataDictDao.queryAll(sql, jt, startRow,
+						pageSize);
+			} else {
+				list = (List<DataDict>) dataDictDao.queryAll(sql, jt, startRow,
+						pageSize, params.toArray(new Object[params.size()]));//new String[params.size()]
+			}
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return list;
+	}
+
+	/**
+	 * 根据id查询某条数据，显示到修改页面上
+	 */
+	@Override
+	public DataDict queryDataDictById(final String id) {
+		this.getLogger().info("============queryDataDictById=========start==");
+		final String sql = HbcsoftCache.getSqlValue("dataDict_queryById");
+		DataDict dd = new DataDict();
+		try {
+			dd = dataDictDao.query(sql, jt, id);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+
+		this.getLogger().info("============queryDictTypeById=========end==");
+		return dd;
+	}
+
+	/**
+	 * 根据typeId查询是否有数据字典
+	 */
+	@Override
+	public boolean haveRecord(final String ids) {
+		boolean flag = false;
+		final String sql = HbcsoftCache.getSqlValue("dataDict_queryByTypeId");
+		try {
+			final DataDict dataDict = dataDictDao.query(sql, jt, ids);
+			flag = this.dataDictIsNull(dataDict);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+
+		}
+		return flag;
+	}
+
+	private boolean dataDictIsNull(final DataDict dataDict) {
+		boolean flag;
+		final Long id = dataDict.getId();
+		if (PubTools.isEmpty(id)) {
+			flag = false;
+		} else {
+			flag = true;
+					
+		}
+		return flag;
+	}
+
+	/**
+	 * 查询数据字典（下拉框）
+	 */
+	@Override
+	public List<DataDict> getDataDictList(final String dictCode,
+			final String showType, final String companyId)
+			throws HbcsoftException {
+		// TODO Auto-generated method stub
+		List<DataDict> list = new ArrayList<DataDict>();
+		final String sql = HbcsoftCache.getSqlValue("dataDict_getDataDictList");
+		try {
+			final List<String> params = new ArrayList<String>();
+			params.add(dictCode);
+			params.add(companyId);
+			list = dataDictDao.queryAll(sql, jt,params.toArray(new Object[params.size()]));//new String[params.size()]
+			// list = dataDictDao.queryAll(sql, jt, dictCode);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return list;
+	}
+
+}

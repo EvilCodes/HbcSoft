@@ -1,0 +1,779 @@
+package com.hbcsoft.form.entity;
+
+import java.io.Serializable;
+import java.sql.*;
+import java.util.Date;
+
+import com.hbcsoft.zdy.common.BaseEntity;
+import com.sun.istack.internal.NotNull;
+import com.yaja.validator.inter.*;
+
+/**
+ * 表单字段表
+ * @author zhanghaijiao
+ *
+ */
+@Table(name="F_FORMFIELDS")
+public class FormFields extends BaseEntity<FormFields> implements Serializable{
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 2045840696148606616L;
+	
+	/**
+	 * 表名
+	 */
+	private String tableName;
+	
+	/**
+	 * 表id
+	 */
+	private Long tableId;
+	
+	/**
+	 * 表备注
+	 */
+	private String tableMemo;
+	
+	/**
+	 * 字段名称
+	 */
+	@Length(max=100, min=1, message="数据库表字段名称长度应该是2位到100位！")
+	@NotNull
+	private String fieldName;
+	
+	/**
+	 * 字段ID
+	 */
+	private Long fieldId;
+	/**
+	 * 标题
+	 */
+	@Length(max=100, min=1, message="数据库表标题名称长度应该是2位到100位！")
+	private String title;
+	
+	/**
+	 * 表单ID
+	 */
+	@NotNull
+	private Long formId;
+	
+	/**
+	 * 字段序号
+	 */
+	@NotNull
+	private int sort;
+	
+	/**
+	 * 是否显示 0：显示 1：不显示
+	 */
+	private int inputIsDisplay;
+	
+	/**
+	 * 类型：0：输入框 1：下拉框 2：按钮 3：多选框 4：点选 5:日期 6：文本域 7：金额
+	 */
+	public int inputType;
+	
+	/**
+	 * 默认值
+	 */
+	@Length(max=500, message="数据库表字段默认值长度应该不超过500位！")
+	private String inputDefaultValue;
+	
+	/**
+	 * 赋值
+	 */
+	@Length(max=500, message="数据库表字段赋值长度应该不超过500位！")
+	private String inputValue;
+	
+	/**
+	 * 是否为查询条件 0：否 1：是
+	 */
+	private int queryisConditions;
+	
+	/**
+	 * 是否在查询列显示 0：否 1：是
+	 */
+	private int queryisColumn;
+	
+	/**
+	 * 是否显示列0：否1：是
+	 */
+	private int isShowColumn;
+	
+	/**
+	 * 是否可修改 0:是 1： 否
+	 */
+	private int isModify;
+	
+	/**
+	 * 数据源方式0：固定表中的值 1：sql
+	 */
+	private int sourceMode;
+	
+	/**
+	 * 数据源内容
+	 */
+	@Length(max=500, message="数据库表字段数据源内容长度应该不超过500位！")
+	private String sourceContent;
+	
+	/**
+	 * Excel备用字段
+	 */
+	private int beiYong;
+	
+	/**
+	 * 操作标识：1：删除 0：添加或编辑  
+	 */
+	private int fieldFlag;
+	
+	/**
+	 * 是否为查询必录项 0：否 1：是
+	 */
+	private int queryisRequired;
+	
+	/**
+	 * 是否为录入必录项 0：否 1：是
+	 */
+	private int isRequired;
+	
+	/**
+	 * 字段长度
+	 */
+	private int number;
+	
+	/**
+	 * 小数位数
+	 */
+	private int decimalDigits;
+	
+	/**
+	 * 是否为空 0：空 1：非空
+	 */
+	private int isNull;
+	/***********扩展字段 start*************/
+	/**
+	 * 开始
+	 */
+	@IsFiled(except=true)
+	private String startValue;
+	/**
+	 * 结束
+	 */
+	@IsFiled(except=true)
+	private String endValue;
+	/**
+	 * 点选信息
+	 */
+	private transient String clickInfo;
+	@IsFiled(except=true)
+	/**
+	 * 点选值
+	 */
+	private String clickValue;
+	/***********扩展字段 end*************/
+	
+	/**
+	 *  获取点选信息
+	 * @return
+	 */
+	public String getClickInfo() {
+		return clickInfo;
+	}
+	/**
+	 *  设置点选信息
+	 * @return
+	 */
+	public void setClickInfo(String clickInfo) {
+		this.clickInfo = clickInfo;
+	}
+	/**
+	 *  获取表名
+	 * @return
+	 */
+	public String getTableName() {
+		return tableName;
+	}
+	/**
+	 * 设置表名
+	 * @param tableName
+	 */
+	public void setTableName(final String tableName) {
+		this.tableName = tableName;
+	}
+
+	/**
+	 * 获取表ID
+	 * @return
+	 */
+	public Long getTableId() {
+		return tableId;
+	}
+
+	/**
+	 * 设置表ID
+	 * @param tableId
+	 */
+	public void setTableId(final Long tableId) {
+		this.tableId = tableId;
+	}
+
+	/**
+	 * 获取表备注
+	 * @return
+	 */
+	public String getTableMemo() {
+		return tableMemo;
+	}
+
+	/**
+	 * 设置表备注
+	 * @param tableMemo
+	 */
+	public void setTableMemo(final String tableMemo) {
+		this.tableMemo = tableMemo;
+	}
+
+	/**
+	 * 获取表单字段名
+	 * @return
+	 */
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	/**
+	 * 设置表单字段名
+	 * @param fieldName
+	 */
+	public void setFieldName(final String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	/**
+	 * 获取表单字段ID
+	 * @return
+	 */
+	public Long getFieldId() {
+		return fieldId;
+	}
+
+	/**
+	 * 设置表单字段ID
+	 * @param fieldId
+	 */
+	public void setFieldId(final Long fieldId) {
+		this.fieldId = fieldId;
+	}
+
+	/**
+	 * 获取表单字段标题
+	 * @return
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * 设置表单字段标题
+	 * @param title
+	 */
+	public void setTitle(final String title) {
+		this.title = title;
+	}
+
+	/**
+	 * 获取表单ID
+	 * @return
+	 */
+	public Long getFormId() {
+		return formId;
+	}
+
+	/**
+	 * 设置表单ID
+	 * @param formId
+	 */
+	public void setFormId(final Long formId) {
+		this.formId = formId;
+	}
+
+	/**
+	 * 获取序号
+	 * @return
+	 */
+	public int getSort() {
+		return sort;
+	}
+
+	/**
+	 * 设置序号
+	 * @param sort
+	 */
+	public void setSort(final int sort) {
+		this.sort = sort;
+	}
+
+	/**
+	 * 获取是否显示状态
+	 * @return
+	 */
+	public int getInputIsDisplay() {
+		return inputIsDisplay;
+	}
+
+	/**
+	 * 设置是否显示状态
+	 * @param inputIsDisplay
+	 */
+	public void setInputIsDisplay(final int inputIsDisplay) {
+		this.inputIsDisplay = inputIsDisplay;
+	}
+
+	/**
+	 * 获取类型
+	 * @return
+	 */
+	public int getInputType() {
+		return inputType;
+	}
+
+	/**
+	 * 设置类型
+	 * @param inputType
+	 */
+	public void setInputType(final int inputType) {
+		this.inputType = inputType;
+	}
+
+	/**
+	 * 获取默认值
+	 * @return
+	 */
+	public String getInputDefaultValue() {
+		return inputDefaultValue;
+	}
+
+	/**
+	 * 设置默认值
+	 * @param inputDefaultValue
+	 */
+	public void setInputDefaultValue(final String inputDefaultValue) {
+		this.inputDefaultValue = inputDefaultValue;
+	}
+
+	/**
+	 * 获取赋值
+	 * @return
+	 */
+	public String getInputValue() {
+		return inputValue;
+	}
+
+	/**
+	 * 设置赋值
+	 * @param inputValue
+	 */
+	public void setInputValue(final String inputValue) {
+		this.inputValue = inputValue;
+	}
+
+	/**
+	 * 获取是否为查询条件
+	 * @return
+	 */
+	public int getQueryisConditions() {
+		return queryisConditions;
+	}
+
+	/**
+	 * 设置是否为查询条件
+	 * @param queryisConditions
+	 */
+	public void setQueryisConditions(final int queryisConditions) {
+		this.queryisConditions = queryisConditions;
+	}
+
+	/**
+	 * 获取是否在查询列显示
+	 * @return
+	 */
+	public int getQueryisColumn() {
+		return queryisColumn;
+	}
+
+	/**
+	 * 设置是否在查询列显示
+	 * @param queryisColumn
+	 */
+	public void setQueryisColumn(final int queryisColumn) {
+		this.queryisColumn = queryisColumn;
+	}
+
+	/**
+	 * 获取是否显示列
+	 * @return
+	 */
+	public int getIsShowColumn() {
+		return isShowColumn;
+	}
+
+	/**
+	 * 设置是否显示列
+	 * @param isShowColumn
+	 */
+	public void setIsShowColumn(final int isShowColumn) {
+		this.isShowColumn = isShowColumn;
+	}
+
+	/**
+	 * 获取是否可修改
+	 * @return
+	 */
+	public int getIsModify() {
+		return isModify;
+	}
+
+	/**
+	 * 设置是否可修改
+	 * @param isModify
+	 */
+	public void setIsModify(final int isModify) {
+		this.isModify = isModify;
+	}
+
+	/**
+	 * 获取数据源方式
+	 * @return
+	 */
+	public int getSourceMode() {
+		return sourceMode;
+	}
+
+	/**
+	 * 设置数据源方式
+	 * @param sourceMode
+	 */
+	public void setSourceMode(final int sourceMode) {
+		this.sourceMode = sourceMode;
+	}
+
+	/**
+	 * 获取数据源内容
+	 * @return
+	 */
+	public String getSourceContent() {
+		return sourceContent;
+	}
+
+	/**
+	 * 设置数据源内容
+	 * @param sourceContent
+	 */
+	public void setSourceContent(final String sourceContent) {
+		this.sourceContent = sourceContent;
+	}
+
+	/**
+	 * 获取开始属性
+	 * @return
+	 */
+	public String getStartValue() {
+		return startValue;
+	}
+
+	/**
+	 * 设置开始属性
+	 * @param startValue
+	 */
+	public void setStartValue(final String startValue) {
+		this.startValue = startValue;
+	}
+
+	/**
+	 * 获取结束属性
+	 * @return
+	 */
+	public String getEndValue() {
+		return endValue;
+	}
+
+	/**
+	 * 设置结束属性
+	 * @param endValue
+	 */
+	public void setEndValue(final String endValue) {
+		this.endValue = endValue;
+	}
+
+	/**
+	 * 获取Excel表备用字段
+	 * @return
+	 */
+	public int getBeiYong() {
+		return beiYong;
+	}
+
+	/**
+	 * 设置Excel表备用字段
+	 * @param beiYong
+	 */
+	public void setBeiYong(final int beiYong) {
+		this.beiYong = beiYong;
+	}
+
+	/**
+	 * 获取字段操作标识
+	 * @return
+	 */
+	public int getFieldFlag() {
+		return fieldFlag;
+	}
+
+	/**
+	 * 设置字段操作标识
+	 * @param fieldFlag
+	 */
+	public void setFieldFlag(final int fieldFlag) {
+		this.fieldFlag = fieldFlag;
+	}
+
+	public String getClickValue() {
+		return clickValue;
+	}
+
+	public void setClickValue(String clickValue) {
+		this.clickValue = clickValue;
+	}
+
+	/**
+	 * 获取是否查询必录
+	 * @return
+	 */
+	public int getQueryisRequired() {
+		return queryisRequired;
+	}
+
+	/**
+	 * 设置是否查询必录
+	 * @param queryisRequired
+	 */
+	public void setQueryisRequired(int queryisRequired) {
+		this.queryisRequired = queryisRequired;
+	}
+
+	/**
+	 * 获取是否录入必录
+	 * @return
+	 */
+	public int getIsRequired() {
+		return isRequired;
+	}
+
+	/**
+	 * 设置是否录入必录
+	 * @param isRequired
+	 */
+	public void setIsRequired(int isRequired) {
+		this.isRequired = isRequired;
+	}
+	
+	/**
+	 * 获取字段长度
+	 * @return
+	 */
+	public int getNumber() {
+		return number;
+	}
+	/**
+	 * 设置字段长度
+	 * @param number
+	 */
+	public void setNumber(final int number) {
+		this.number = number;
+	}
+	/**
+	 * 获取小数位数
+	 * @return
+	 */
+	public int getDecimalDigits() {
+		return decimalDigits;
+	}
+	/**
+	 * 设置小数位数
+	 * @param decimalDigits
+	 */
+	public void setDecimalDigits(final int decimalDigits) {
+		this.decimalDigits = decimalDigits;
+	}
+	/**
+	 * 获取是否为空 0：空 1：非空
+	 * @return
+	 */
+	public int getIsNull() {
+		return isNull;
+	}
+	/**
+	 * 设置是否为空 0：空 1：非空
+	 * @param isNull
+	 */
+	public void setIsNull(final int isNull) {
+		this.isNull = isNull;
+	}
+
+	/**
+	 * 重写父类ProcessRow方法
+	 */
+	@Override
+	public void processRow(final ResultSet rs) throws SQLException {
+		super.processRow(rs);
+		this.setId(rs.getLong("id"));
+		this.setTableId(rs.getLong("tableId"));
+		this.setTableName(rs.getString("tableName"));
+		this.setTableMemo(rs.getString("tableMemo"));
+		this.setFieldName(rs.getString("fieldName"));
+		this.setFormId(rs.getLong("formId"));
+		this.setSort(rs.getInt("sort"));
+		this.setInputIsDisplay(rs.getInt("inputIsDisplay"));
+		this.setInputType(rs.getInt("inputType"));
+		this.setInputDefaultValue(rs.getString("inputDefaultValue"));
+		this.setQueryisConditions(rs.getInt("queryisConditions"));
+		this.setQueryisColumn(rs.getInt("queryisColumn"));
+		this.setIsShowColumn(rs.getInt("isShowColumn"));
+		this.setIsModify(rs.getInt("isModify"));
+		this.setTitle(rs.getString("title"));
+		this.setFieldId(rs.getLong("fieldId"));
+		this.setInputValue(rs.getString("inputValue"));
+		this.setSourceMode(rs.getInt("sourceMode"));
+		this.setSourceContent(rs.getString("sourceContent"));
+		this.setBeiYong(rs.getInt("beiYong"));
+		this.setFieldFlag(rs.getInt("fieldFlag"));
+		this.setQueryisRequired(rs.getInt("queryisRequired"));
+		this.setIsRequired(rs.getInt("isRequired"));
+		this.setNumber(rs.getInt("number"));
+		this.setDecimalDigits(rs.getInt("decimalDigits"));
+		this.setIsNull(rs.getInt("isNull"));
+		this.setClickInfo(rs.getString("clickInfo"));
+		this.setClickValue(rs.getString("clickValue"));
+	}
+
+	/**
+	 * 重写父类mapRow方法
+	 */
+	@Override
+	public FormFields mapRow(final ResultSet rs, final int arg1) throws SQLException {
+		final FormFields te = new FormFields();
+		super.mapRow(te, rs, arg1);
+		te.setId(rs.getLong("id"));
+		te.setTableId(rs.getLong("tableId"));
+		te.setTableName(rs.getString("tableName"));
+		te.setTableMemo(rs.getString("tableMemo"));
+		te.setFieldName(rs.getString("fieldName"));
+		te.setFormId(rs.getLong("formId"));
+		te.setSort(rs.getInt("sort"));
+		te.setInputIsDisplay(rs.getInt("inputIsDisplay"));
+		te.setInputType(rs.getInt("inputType"));
+		te.setInputDefaultValue(rs.getString("inputDefaultValue"));
+		te.setQueryisConditions(rs.getInt("queryisConditions"));
+		te.setQueryisColumn(rs.getInt("queryisColumn"));
+		te.setIsShowColumn(rs.getInt("isShowColumn"));
+		te.setIsModify(rs.getInt("isModify"));
+		te.setTitle(rs.getString("title"));
+		te.setFieldId(rs.getLong("fieldId"));
+		te.setInputValue(rs.getString("inputValue"));
+		te.setSourceMode(rs.getInt("sourceMode"));
+		te.setSourceContent(rs.getString("sourceContent"));
+		te.setBeiYong(rs.getInt("beiYong"));
+		te.setFieldFlag(rs.getInt("fieldFlag"));
+		te.setQueryisRequired(rs.getInt("queryisRequired"));
+		te.setIsRequired(rs.getInt("isRequired"));
+		te.setNumber(rs.getInt("number"));
+		te.setDecimalDigits(rs.getInt("decimalDigits"));
+		te.setIsNull(rs.getInt("isNull"));
+		te.setClickInfo(rs.getString("clickInfo"));
+		te.setClickValue(rs.getString("clickValue"));
+		return te;
+	}
+
+	/**
+	 * 表单字段表信息复制
+	 * @return
+	 */
+	public FormFields copy()
+	{
+		final FormFields te = new FormFields();
+		final Long ID = this.getId();
+		final Long companyID = this.getCompanyId();
+		final Long ZID = this.getZid();
+		final Long updateID = this.getUpdateID();
+		final Date updateTime = this.getUpdateTime();
+		final Date createTime = this.getCreateTime();
+		final Long createID = this.getCreateID();
+		final Long tableID = this.getTableId();
+		final String tableName = this.getTableName();
+		final String tableMemo = this.getTableMemo();
+		final String fieldName = this.getFieldName();
+		final Long formID = this.getFormId();
+		final int sort = this.getSort();
+		final int inputIsDisplay = this.getInputIsDisplay();
+		final int inputType = this.getInputType();
+		final String inputDefaultValue = this.getInputDefaultValue();
+		final int queryisConditions = this.getQueryisConditions();
+		final int queryisColumn = this.getQueryisColumn();
+		final int modify = this.getIsModify();
+		final String title = this.getTitle();
+		final Long fieldID = this.getFieldId();
+		final String inputValue = this.getInputValue();
+		final int sourceMode = this.getSourceMode();
+		final String sourceContent = this.getSourceContent();
+		final String startValue = this.getStartValue();
+		final String endValue = this.getEndValue();
+		final int isShowColumn = this.getIsShowColumn();
+		final int beiYong = this.getBeiYong();
+		final int fieldFlag = this.getFieldFlag();
+		final String clickInfo = this.getClickInfo();
+		final String clickValue = this.getClickValue();
+		final int queryisRequired = this.getQueryisRequired();
+		final int isRequired = this.getIsRequired();
+		final int number = this.getNumber();
+		final int decimalDigits = this.getDecimalDigits();
+		final int isNull = this.getIsNull();
+		te.setId(ID);
+		te.setCompanyId(companyID);
+		te.setZid(ZID);
+		te.setUpdateID(updateID);
+		te.setUpdateTime(updateTime);
+		te.setCreateTime(createTime);
+		te.setCreateID(createID);
+		te.setTableId(tableID);
+		te.setTableName(tableName);
+		te.setTableMemo(tableMemo);
+		te.setFieldName(fieldName);
+		te.setFormId(formID);
+		te.setSort(sort);
+		te.setInputIsDisplay(inputIsDisplay);
+		te.setInputType(inputType);
+		te.setInputDefaultValue(inputDefaultValue);
+		te.setQueryisConditions(queryisConditions);
+		te.setQueryisColumn(queryisColumn);
+		te.setIsModify(modify);
+		te.setTitle(title);
+		te.setFieldId(fieldID);
+		te.setInputValue(inputValue);
+		te.setSourceMode(sourceMode);
+		te.setSourceContent(sourceContent);
+		te.setStartValue(startValue);
+		te.setEndValue(endValue);
+		te.setIsShowColumn(isShowColumn);
+		te.setBeiYong(beiYong);
+		te.setFieldFlag(fieldFlag);
+		te.setClickInfo(clickInfo);
+		te.setClickValue(clickValue);
+		te.setQueryisRequired(queryisRequired);
+		te.setIsRequired(isRequired);
+		te.setNumber(number);
+		te.setDecimalDigits(decimalDigits);
+		te.setIsNull(isNull);
+		return te;
+	}
+}

@@ -1,0 +1,116 @@
+header{
+	border-bottom: 5px solid #bbb;;
+}
+/*头部导航划过样式*/
+#pc .nav > li > a:focus, #pc .nav > li > a:hover{
+	color: #bbb;;
+}
+/*导航元素样式*/
+section #aside{
+	background: #bbb;;
+	border: 4px solid #f6f6f6;
+	border-bottom: 0;
+}
+/*一级导航元素样式*/
+#aside ul.subnav li a{
+	color: #f6f6f6;
+	border-bottom: 1px solid #aaa;
+	border-top: 1px solid #ccc;
+}
+/*二级导航元素样式*/
+#aside ul.subnav li ul.menu{
+	background: #ccc;
+}
+#aside ul.menu li a{
+	border-bottom: 1px solid #bbb;;
+	border-top: 1px solid #ddd;
+}
+/*三级导航元素样式*/
+#aside ul.subnav li ul.menu li .submenu{
+	background: #ddd;
+}
+#aside ul.submenu li a{
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #eee;
+}
+/*导航元素折叠背景*/
+.inactive{
+	background: url(../../image/off1.png) no-repeat 175px center;
+}
+/*被选中导航元素背景*/
+.navActive{
+	background: #aaa url(../../image/on1.png) no-repeat 175px center;
+}
+.menuActive{
+	background: #bbb url(../../image/on1.png) no-repeat 175px center;
+}
+.submenuActives{
+	background: #ccc url(../../image/on1.png) no-repeat 175px center;
+}
+/*面板样式*/
+.panel-primary{
+	border-color: #bbb;
+}
+.panel-primary > .panel-heading{
+	background-color: #bbb;
+	border-color: #bbb;
+}
+/*删行按钮*/
+.delline{
+	border: 1px solid #bbb;;
+	background: #bbb;
+}
+.delline:hover{
+	border: 1px solid #bbb;;
+	color: #bbb;
+}
+/**/
+.dl-item ol li a:hover{
+	color: #bbb;
+}
+
+#aside ul.subnav li a{
+	color: #333;
+}
+.mainTitlet{
+	background: #333;
+}
+.pages>.pagination>.page>a{
+	color: #333;
+}
+.pages>.pagination>.active>a{
+	background-color: #333;
+	border-color: #333;
+	color: #fff;
+}
+.pages>.pagination>li>a.first,.pages>.pagination>li>a.pre,.pages>.pagination>li>a.next,.pages>.pagination>li>a.last{
+	color: #333;
+}
+.pages>.pagination>li.disabled>a{
+	color: #999;
+}
+.formcontrol:focus {
+	border-color: #333;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(105, 105, 105, .6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(105, 105, 105, .6);
+}
+.form-control:focus {
+	border-color: #333;
+	outline: 0;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(105, 105, 105, .6);
+		box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(105, 105, 105, .6);
+}
+.btn-primary{
+	background: #565661;
+	border-color: #aaa;
+}
+.btn-primary:active,
+.btn-primary:hover {
+	background-color: #aaa;
+	border-color: #aaa;
+}
+.btn-primary:active:hover{
+	background-color: #aaa;
+	border-color: #aaa;
+}

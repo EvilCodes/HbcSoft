@@ -1,0 +1,426 @@
+package com.hbcsoft.sys.controller;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.hbcsoft.common.HBCSoftConstant;
+import com.hbcsoft.common.TreeNode;
+import com.hbcsoft.common.model.*;
+import com.hbcsoft.common.utils.ControllerUtils;
+import com.hbcsoft.common.utils.ServletUtils;
+
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.sys.entity.Resource;
+import com.hbcsoft.sys.entity.Role;
+import com.hbcsoft.sys.entity.RoleResource;
+import com.hbcsoft.sys.entity.SessionInfo;
+import com.hbcsoft.sys.entity.User;
+import com.hbcsoft.sys.service.ResourceService;
+import com.hbcsoft.sys.service.RoleResourceService;
+import com.hbcsoft.sys.service.RoleService;
+
+import com.hbcsoft.zdy.common.BaseController;
+import com.hbcsoft.zdy.util.PubTools;
+import com.hbcsoft.zdy.util.SequenceUtil;
+/**
+ * 角色管理控制层
+ * */
+@Controller
+@RequestMapping(value = "/sys/role")
+public class RoleController extends BaseController<RoleController> {
+	/**
+	 * 注入角色管理接口
+	 * */
+	@Autowired
+	private transient RoleService roleService;
+	/**
+	 * 注入资源管理接口
+	 * */
+	@Autowired
+	private transient ResourceService resourceService;
+	/**
+	 * 注入角色资源管理接口
+	 * */
+	@Autowired
+	private transient RoleResourceService roleResourceService;
+	/**
+	 * 角色实体
+	 * */
+	private Role role;
+	/**
+	 * 总记录数
+	 * */
+	private int totalNum;
+	/**
+	 * 主键
+	 * */
+	private String id;
+	/**
+	 * session
+	 * */
+	public static final Map<Long,Role> sessionInfoMap = new ConcurrentHashMap<Long, Role>();
+	/**
+	 * 角色getter
+	 * */
+	public Role getRole() {
+		return role;
+	}
+	/**
+	 * 角色setter
+	 * */
+	public void setRole(final Role role) {
+		this.role = role;
+	}
+	/**
+	 * 总记录数getter
+	 * */
+	public int getTotalNum() {
+		return totalNum;
+	}
+	/**
+	 * 总记录数setter
+	 * */
+	public void setTotalNum(final int totalNum) {
+		this.totalNum = totalNum;
+	}
+	/**
+	 * 主键getter
+	 * */
+	public String getId() {
+		return id;
+	}
+	/**
+	 * 主键setter
+	 * */
+	public void setId(final String id) {
+		this.id = id;
+	}
+	/**
+	 * 首页跳转
+	 * @return
+	 */
+	@RequestMapping(value = "/role")
+	public String roles() {
+		return "/sys/role/role";
+	}
+
+	/**
+	 * 判断编号是否重复
+	 * @param roleCode
+	 * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	@SuppressWarnings("unused")
+	@ResponseBody
+	@RequestMapping(value = "/checkRoleCode", method = RequestMethod.POST)
+	public String checkRoleCode(final Role role,final String roleCode) throws InstantiationException, IllegalAccessException {
+		final SessionInfo info= (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		final String id = request.getParameter("id");
+		try {
+			List<Role> list;
+				list = roleService.queryAll(role,id,String.valueOf(info.getCompany().getId()));
+				String json = "0";// 不存在
+				for (final Role rs : list) {
+					if (rs.getCode().equals(id)) {
+						json = "1";// 存在
+						break;
+					}
+				}
+		} catch (HbcsoftException e) {
+			this.getLogger().info(e);
+		}
+		return null;
+	}
+
+	/**
+	 * 分页查询资源类型
+	 * @throws HbcsoftException
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	@SuppressWarnings("unused")
+	@ResponseBody
+	@RequestMapping(value = "/pageRoleList", method = RequestMethod.POST)
+	public void pageRoleList(final Role role, final HttpServletRequest request, final HttpServletResponse response)
+			throws HbcsoftException, InstantiationException, IllegalAccessException {
+		final SessionInfo info= (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		final String id = request.getParameter("id");
+		final int pageSize = Integer.parseInt(request.getParameter("rows"));
+		final int currentPage = Integer.parseInt(request.getParameter("page"));
+		Result result = null;
+		try {
+			final List<Role> allRoleType = roleService.queryAll(role, id,String.valueOf(info.getCompany().getId()));
+			totalNum = allRoleType.size();
+			int pageTimes;
+			if (totalNum % pageSize == 0) {
+				pageTimes = totalNum / pageSize;
+			} else {
+				pageTimes = totalNum / pageSize + 1;
+			}
+			final int startRow = (currentPage - 1) * pageSize;
+			final List<Role> list = roleService.queryAllRoleType(role,id,String.valueOf(info.getCompany().getId()),startRow, pageSize);
+			final Pager<Role> page = new Pager<Role>();
+			page.setTotalCount(totalNum);
+			page.setResult(list);
+			this.getLogger().info("page.getTotalCount():" + page.getTotalCount() + "page.getResult():" + page.getResult());
+			final Datagrid<Role> dg = new Datagrid<Role>(page.getTotalCount(), page.getResult());
+			ControllerUtils.renderText(dg);
+
+		} catch (HbcsoftException e) {
+			this.getLogger().info(e);
+			result = Result.errorResult();
+			ControllerUtils.renderJson(result);
+			throw e;
+		}
+	}
+
+	/**
+	 * 模糊查询弹出role-search.jsp页面
+	 * @return
+	 */
+	@RequestMapping(value = "/roleSearch", method = RequestMethod.GET)
+	public ModelAndView search() throws HbcsoftException{
+		final ModelAndView model = new ModelAndView();
+		model.setViewName("sys/role/role-search");
+		return model;
+	}
+	/**
+	* 删除
+	* @return
+	*/
+	@RequestMapping(value = "/deleteRole",method=RequestMethod.POST)
+	public String delete(final HttpServletRequest request,final HttpServletResponse response) throws HbcsoftException{
+		final SessionInfo info= (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		String ids = request.getParameter("ids");
+		try {
+			if(!PubTools.isEmpty(ids)){
+				ids = ids.substring(0, ids.length()-1);
+				final String [] strId = ids.split(",");
+				for (int i = 0; i < strId.length; i++) {
+					final String idss = strId[i];
+					final Role role = roleService.queryRoleByIds(idss, String.valueOf(info.getCompany().getId()));
+					roleService.deletebyIds(role);
+					}
+				}
+			ControllerUtils.renderJson(Result.successResult());
+		} catch (HbcsoftException e) {
+			ControllerUtils.renderJson(Result.errorResult());
+			this.getLogger().info(e);
+		}
+		return null;
+	}
+	 /**
+	* 添加、修改  弹出role-input.jsp页面
+	* @param request
+	* @param response
+	* @return
+	* @throws Exception
+	*/
+	@RequestMapping(value = "/roleInput")
+	public ModelAndView input(final HttpServletRequest request,final HttpServletResponse response) throws HbcsoftException {
+		final ModelAndView model= new ModelAndView("sys/role/role-input") ;
+		Role role=null;
+		final String id = request.getParameter("id");
+		final ModelMap modmm = model.getModelMap();
+		try {
+			final SessionInfo info= (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+			if(PubTools.isEmpty(id)){//添加
+				role=new Role();
+				final User user = new User();
+				user.setId(info.getUser().getId());
+				user.setName(info.getUser().getName());
+				role.setCreateUser(user);
+			}else{
+				role = roleService.queryRoleByIds(id,String.valueOf(info.getCompany().getId()));//根据主键查询，修改
+			}
+			 modmm.put("role", role);
+		} catch (HbcsoftException e) {
+			this.getLogger().info(e);
+		}
+		return model;	
+	}
+	
+	/**
+	* 保存
+	* @param request
+	* @return
+	* @throws Exception
+	*/
+	@RequestMapping(value = "/roleSave",method=RequestMethod.POST)
+	@ResponseBody
+	public String save(final HttpServletRequest request,final Role role) throws HbcsoftException{
+		final String id=request.getParameter("id");
+		final SessionInfo  info= (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+//		Result result=null;	
+		try{
+			if(PubTools.isEmpty(id)){//添加
+				final Long fromid = SequenceUtil.getTableId("F_FORMNAME");
+				final Long userId = info.getUser().getId();
+				role.setId(fromid);
+				role.setCompanyId(info.getCompany().getId());
+				role.setCreateID(userId);
+				role.setCreateTime(new Date());
+				role.setUpdateID(userId);
+				role.setUpdateTime(new Date());
+				roleService.addRole(role);
+			}else{//修改
+				final Long userId = info.getUser().getId();
+				role.setCompanyId(info.getCompany().getId());
+				role.setUpdateID(userId);
+				role.setUpdateTime(new Date());
+				roleService.update(role);
+			}
+			ControllerUtils.render(ServletUtils.TEXT_TYPE,Result.successResult());
+		}catch(HbcsoftException e){
+			ControllerUtils.render(ServletUtils.HTML_TYPE,Result.errorResult());
+			throw e;
+		}
+		return null;
+	}
+	/**
+	 * 设置资源
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/roleResource")
+	public ModelAndView roleRes(final HttpServletRequest request,final HttpServletResponse response) throws HbcsoftException {
+		final ModelAndView model = new ModelAndView("sys/role/role-resource");
+		final ModelMap modmm = model.getModelMap();
+			modmm.put("roleId", request.getParameter("id"));
+		return model;
+	}
+	/**
+	 * 资源树 
+	 * @param session
+	 * @param request
+	 * @return
+	 * @throws HbcsoftException 
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "/rescTreeGrid", method = RequestMethod.POST)
+	@ResponseBody
+	public void resTreegrid(final HttpSession session,final HttpServletRequest request) throws HbcsoftException, IOException {
+		final String id = request.getParameter("id");
+		List<TreeNode> treeNodes = new ArrayList<TreeNode>();
+		final SessionInfo info = (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		try {
+			final Role role = roleService.queryResById(id,String.valueOf(info.getCompany().getId()));
+		if(role!=null){
+			final List<Resource> resources = resourceService.queryResourceListbyRoleId(id,
+					String.valueOf(info.getCompany().getId()));
+				treeNodes = resourceService.findResourceMenu(String.valueOf(info.getCompany().getId()));
+					for (final TreeNode treeNode : treeNodes) {
+						treeNode.setChecked(false);
+						if (!resources.isEmpty()) {
+							if ("-1".equals(String.valueOf(treeNode.getId()))) {
+								treeNode.setChecked(true);
+							}
+							for (final Resource resource : resources) {
+								if (treeNode.getId().equals(resource.getId())) {
+									treeNode.setChecked(true);
+									treeNode.setOpen(true);
+									break;
+								}
+							}
+						}
+					}
+		}
+		ControllerUtils.getRequest().removeAttribute("roleId");
+		ControllerUtils.renderJson(treeNodes);	
+		} catch (HbcsoftException e) {
+			this.getLogger().info(e);
+		}
+	}
+	/**
+	* 修改资源
+	*/
+	@RequestMapping(value = "/updateRoleResource", method = RequestMethod.POST)
+	public void updateRoleResource(final HttpSession session,
+			final HttpServletRequest request)throws HbcsoftException{
+		final SessionInfo info = (SessionInfo) session.getAttribute(HBCSoftConstant.SESSIONINFO);
+		final String id = request.getParameter("id");//角色id
+		String ids = request.getParameter("ids");
+		Role role = new Role();
+		RoleResource rore;
+		try {
+			if(null != id && !"".equals(id)){
+				role = roleService.getRole(id);
+			}
+			roleResourceService.deleteByRoleId(id,String.valueOf(info.getCompany().getId()));
+			if ((ids.length() - 1) > 0) {
+				ids = ids.substring(0, ids.length()-1);//[-1,1]
+				final String[] strId = ids.split(",");
+				rore = new RoleResource();
+				for(final String resourceId : strId){
+					final String st = String.valueOf(-1);
+					if(!st.equals(resourceId)){
+						final Resource resource = resourceService.queryResById(resourceId);//资源id
+						rore.setRoleId(role.getId());
+						rore.setResourceId(resource.getId());
+						rore.setCompanyId(info.getCompany().getId());
+						roleResourceService.addRoleResource(rore);
+					}
+				}
+			}
+			ControllerUtils.renderText(Result.successResult());
+		} catch (HbcsoftException e) {
+			this.getLogger().info(e);
+		}
+	}
+
+	/**
+	* 点选菜单中：角色多选
+	* @return
+	*/
+	@RequestMapping(value = "/roleCheck", method = RequestMethod.GET)
+	public ModelAndView menuCheck() {
+		final ModelAndView model = new ModelAndView();
+		final String ids = request.getParameter("ids");
+		model.setViewName("sys/role/role-check");
+		model.getModel().put("ids", ids);
+		return model;
+	}
+	
+	/**
+	* 树 tree
+	* 点选：角色
+	*/
+	@RequestMapping(value = "/treegrid", method = RequestMethod.POST)
+	@ResponseBody
+	public List<TreeNode> showData(final HttpServletRequest request) {
+		final String ids = request.getParameter("ids");
+		final String [] str = ids.split("[,，]");
+		
+		List<TreeNode> treeNode = new ArrayList<TreeNode>();
+		final SessionInfo info = (SessionInfo) session
+				.getAttribute(HBCSoftConstant.SESSIONINFO);
+		try {
+			treeNode = roleService.findRoleMenu(String.valueOf(info
+					.getCompany().getId()));
+			for(final TreeNode tn : treeNode){
+				for(int i=0; i<str.length; i++){
+					if(tn.getId().toString().equals(str[i])){
+						tn.setChecked(true);
+						tn.setOpen(true);
+						break;
+					}
+				}
+			}
+		} catch (HbcsoftException e) {
+			// TODO Auto-generated catch block
+			this.getLogger().info(e);
+		}
+		return treeNode;
+	}
+}

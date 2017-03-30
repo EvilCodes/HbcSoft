@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//WebContent/common/meta.jsp=UTF-8
+encoding//WebContent/index.jsp=UTF-8
+encoding//WebContent/jsp/error/error404.jsp=UTF-8
+encoding//WebContent/jsp/login/login.jsp=UTF-8
+encoding//WebContent/jsp/sys/user/userList.jsp=UTF-8
+encoding//src/com/hbcsoft/file/xml/HbcsoftXmlUtil.java=UTF-8
+encoding//src/com/hbcsoft/sys/entity/User.java=UTF-8
+encoding//src/com/hbcsoft/zdy/common/BaseEntity.java=UTF-8
+encoding/<project>=UTF-8

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<!--[if lt IE 9]>
+		<script src="http://cdn.static.runoob.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+	<![endif]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width-device-width,initial-scale-1.0">
+<link rel="stylesheet" href="../../css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/index.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<!-- <link rel="stylesheet" href="../../css/skin/gray.css"> -->
+<!-- <link rel="stylesheet" href="../../css/skin/blue.css"> -->
+<!-- <link rel="stylesheet" href="../../css/skin/purple.css"> -->
+<!-- <link rel="stylesheet" href="../../css/skin/red.css"> -->
+<!-- <link rel="stylesheet" href="../../css/skin/black.css"> -->
+<!-- <link rel="stylesheet" href="../../css/skin/white.css"> -->
+<link rel="stylesheet" href="../../css/skin/green.css">
+</head>
+<body>
+	<header>
+		<div id="pc">
+			<div class="title">
+				<p>北京海博诚科技有限公司办公管理平台</p>
+			</div>
+			<div class="fix">
+				<ul class="nav nav-pills  pull-right">
+					<li><a href="#" class="default">欢迎 猪八戒 登录</a></li>
+					<li><a href="#"><span class="glyphicon glyphicon-user"></span>
+							首页</a></li>
+					<li><a href="#"><span class="glyphicon glyphicon-log-out"></span>
+							注销</a></li>
+					<li><a href="#" data-toggle="modal" data-target="#changPW"><span
+							class="glyphicon glyphicon-cog"></span> 设置</a></li>
+					<li class="pifu"><a href="#" class="skin"><span
+							class="glyphicon glyphicon-tint"></span> 皮肤</a>
+						<ul class="theskin">
+							<li><a href="#" class="btn skincolor black"></a></li>
+							<li><a href="#" class="btn skincolor purple"></a></li>
+							<li><a href="#" class="btn skincolor blue"></a></li>
+							<li><a href="#" class="btn skincolor red"></a></li>
+							<li><a href="#" class="btn skincolor gray"></a></li>
+							<li><a href="#" class="btn skincolor white"></a></li>
+							<li><a href="#" class="btn skincolor green"></a></li>
+						</ul></li>
+				</ul>
+				<!-- 模态框（Modal） -->
+				<div class="modal fade" id="changPW" tabindex="-1" role="dialog"
+					aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel">修改密码</h4>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<form role="form" class="form-horizontal" autocomplete="off">
+										<div class="form-group">
+											<label for="oldpassword"
+												class="col-md-3 col-sm-3  control-label"><span
+												class="must">*&nbsp;</span>旧密码：</label>
+											<div class="col-md-8 col-sm-8 ">
+												<input type="password" class="form-control" maxlength="12"
+													onKeyUp=pwStrength(this.value)
+													onBlur=pwStrength(this.value) name="oldpassword"
+													id="oldpassword" placeholder="请输入旧密码" required>
+											</div>
+										</div>
+										<div class="col-md-offset-3">
+											<p id="oldpasswordtxt" class="txt">
+												<span class="glyphicon glyphicon-minus-sign"></span>&nbsp;请输入旧密码
+											</p>
+										</div>
+										<div class="form-group">
+											<label for="newpassword"
+												class="col-md-3 col-sm-3  control-label"><span
+												class="must">*&nbsp;</span>新密码：</label>
+											<div class="col-md-8 col-sm-8">
+												<input type="password" class="form-control" maxlength="12"
+													onKeyUp=pwStrength(this.value)
+													onBlur=pwStrength(this.value) name="newpassword"
+													id="newpassword" placeholder="请输入新密码" required>
+											</div>
+											<br>
+										</div>
+										<div class="col-md-offset-3">
+											<p id="newpasswordtxt" class="txt">
+												<span class="glyphicon glyphicon-minus-sign"></span>&nbsp;以字母开头，含6-12位字符、数字或下划线
+											</p>
+										</div>
+										<div class="form-group">
+											<label for="repassword"
+												class="col-md-3 col-sm-3  control-label"> <span
+												class="must">*&nbsp;</span>确认密码：
+											</label>
+											<div class="col-md-8 col-sm-8">
+												<input type="password" class="form-control" maxlength="12"
+													name="repassword" id="repassword" placeholder="请再次输入新密码"
+													required>
+											</div>
+											<br>
+										</div>
+										<div class="col-md-offset-3">
+											<p id="repasswordtxt" class="txt">
+												<span class="glyphicon glyphicon-minus-sign"></span>&nbsp;请输入新密码
+											</p>
+										</div>
+									</form>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+								<button type="button" class="btn btn-primary">确定</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<section>
+		<div id="aside">
+			<div class="logo">
+				<img src="../../image/portrait.jpg" alt="">
+			</div>
+			<nav>
+				<ul class="subnav">
+					<li><a href="#" class="inactive"><i class="fa fa-home"></i>一级导航</a>
+						<ul class="menu">
+							<li><a href="#" class="inactive">二级导航二级导航二级</a>
+								<ul class="submenu">
+									<li><a href="#" target="Conframe">三级导航</a></li>
+									<li><a href="#" target="Conframe">三级导航</a></li>
+									<li><a href="#" target="Conframe">三级导航</a></li>
+								</ul></li>
+							<li><a href="#" target="Conframe">二级导航</a></li>
+							<li><a href="#" target="Conframe">二级导航</a></li>
+						</ul></li>
+					<li><a href="#" class="inactive"><i class="fa fa-leaf"></i>一级导航</a>
+						<ul class="menu">
+							<li><a href="#" class="inactive">二级导航</a>
+								<ul class="submenu">
+									<li><a href="#" target="Conframe">三级导航</a></li>
+									<li><a href="#" target="Conframe">三级导航</a></li>
+									<li><a href="#" target="Conframe">三级导航</a></li>
+								</ul></li>
+							<li><a href="#" target="Conframe">二级导航</a></li>
+							<li><a href="#" target="Conframe">二级导航</a></li>
+						</ul></li>
+					<li><a href="#" class="inactive"><i class="fa fa-fire"></i>一级导航</a></li>
+					<li><a href="#" class="inactive"><i class="fa fa-tint"></i>一级导航</a></li>
+				</ul>
+			</nav>
+		</div>
+		<div id="contentWrap" class="contentWrap">
+			<div class="Conframe">
+				<iframe id="Conframe" name="Conframe" src="../form/form_add.html"
+					frameborder="0"></iframe>
+			</div>
+		</div>
+	</section>
+
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/bootstrap/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$(".theskin").stop().hide();
+			$(".skin").click(function(){
+				if($(".theskin").is(":hidden")){
+					$(".theskin").stop().slideDown();
+				}else{
+					$(".theskin").stop().slideUp();
+				}
+			})
+			$(".pifu").hover(function(){},function(){
+				$(".theskin").slideUp()
+			})
+		})
+		$(function(){
+			$(".menu").hide()
+			$(".submenu").hide()
+			$(".subnav > li > a").click(function(){
+				$(this).addClass("navActive").parents().siblings().find("a").removeClass("navActive");
+				$(this).parents().siblings().find(".menu").hide(300);
+				$(this).siblings(".menu").toggle(300);
+				$(this).parents().siblings().find(".menu > li > .submenu").hide()
+			})
+			$(".menu > li > a").click(function(){
+				$(this).addClass("menuActive").parents().siblings().find("a").removeClass("menuActive");
+				$(this).parents().siblings().find(".submenu").hide(300);	
+				$(this).siblings(".submenu").toggle(300);	
+			})
+
+			$(".submenu > li > a").click(function(){
+				$(this).addClass("submenuActives").parents().siblings().find("a").removeClass("submenuActives");
+			})
+		})
+	
+		$(function(){
+			var icons = '<span class="glyphicon glyphicon-minus-sign"></span>';
+			var iconright = '<span class="glyphicon glyphicon-ok-sign" style="color: #7cde68"></span>';
+			var iconwrong = '<span class="glyphicon glyphicon-remove-sign" style="color: #ff0000;">';
+			var password = true;
+			var repassword = true;
+			//密码验证---旧密码
+
+			$("input[name='oldpassword']").focus(function(){		
+				// document.getElementById("oldpasswordtxt").innerHTML = icons + "&nbsp;" + "以字母开头，含6-12位字符、数字或下划线"
+				}).blur(function(){
+					var reg1 = /^[a-zA-Z]\w{5,11}$/;
+					var key1 = document.getElementById("oldpassword").value;
+					if(reg1.test(key1) == true){
+						document.getElementById("oldpasswordtxt").innerHTML = iconright + "&nbsp;" ;
+						password = true;
+					}else{
+						document.getElementById("oldpasswordtxt").innerHTML = iconwrong + "&nbsp;"  + "密码错误";
+						password = false;
+					}
+				})
+			//密码验证---新密码
+
+			$("input[name='newpassword']").focus(function(){		
+				// document.getElementById("newpasswordtxt").innerHTML = icons + "&nbsp;" + "字母开头，含6-12位字符、数字或下划线"
+				}).blur(function(){
+					var reg2 = /^[a-zA-Z]\w{5,11}$/;
+					var key2 = document.getElementById("newpassword").value;
+					if(reg2.test(key2) == true){
+						document.getElementById("newpasswordtxt").innerHTML = iconright + "&nbsp;" ;
+						password = true;
+					}else{
+						document.getElementById("newpasswordtxt").innerHTML = iconwrong + "&nbsp;"  + "密码格式错误";
+						password = false;
+					}
+				})
+			//确认密码
+			$("input[name='repassword']").focus(function(){		
+				// document.getElementById("repasswordtxt").innerHTML = icons + "&nbsp;" + "请重新输入密码"
+				}).blur(function(){
+					var reg3 = /^[a-zA-Z]\w{5,11}$/;
+					var key2 = document.getElementById("newpassword").value;
+					var key3 = document.getElementById("repassword").value;
+					if(reg3.test(key3) == true && key2 == key3){
+						document.getElementById("repasswordtxt").innerHTML = iconright + "&nbsp;" ;
+						repassword = true;
+					}else{
+						document.getElementById("repasswordtxt").innerHTML = iconwrong + "&nbsp;"  + "两次密码输入不一致，请重新输入";
+						repassword = false;
+					}
+				})
+			$("form").submit(function(e){
+				// if(password && repassword && username && mail && company && csimple && co){
+				// 	return true;
+				// }else{
+				// 	alert("提交失败，请查检数据输入。");
+				// 	return false;
+				// }
+				if(!password){
+					alert("密码格式错误!");
+					return false;
+				}else if(!repassword){
+					alert("确认密码格式错误!");
+					return false;
+				}else{
+					return true;
+				}
+			});
+		})
+	</script>
+</body>
+</html>

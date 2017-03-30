@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>表单表</title>
+<!--[if lt IE 9]>
+		<script src="http://cdn.static.runoob.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+	<![endif]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width-device-width,initial-scale-1.0">
+<link rel="stylesheet" href="../../css/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<form action="method" role="form" class="form-horizontal">
+				<h3>表单表</h3>
+				<hr>
+				<div class="btn-group">
+					<a href="xzbdzdb.html" class="btn btn-default zsgc">添加</a> <a
+						href="xzbdb.html" class="btn btn-default zsgc">修改</a> <a href="#"
+						class="btn btn-default zsgc">删除</a> <a href="#"
+						class="btn btn-default zsgc">查询</a>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="drive"
+							class="control-label col-lg-2 col-md-2 col-sm-4">表单名称</label>
+						<div class="col-lg-10 col-md-10 col-sm-8">
+							<input type="text" id="drive" class="form-control" placeholder="">
+						</div>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="choice"
+							class="control-label col-lg-2 col-md-2 col-sm-4">提交方式</label>
+						<div class="col-lg-10 col-md-10 col-sm-8">
+							<select id="choice" class="form-control ">
+								<option>请选择</option>
+								<option>post</option>
+								<option>get</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="drive"
+							class="control-label col-lg-2 col-md-2 col-sm-4">表单类型</label>
+						<div class="col-lg-10 col-md-10 col-sm-8">
+							<input type="text" id="drive" class="form-control" placeholder="">
+						</div>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 col-xs-12">
+						<label for="drive"
+							class="control-label col-lg-2 col-md-2 col-sm-4">备注</label>
+						<div class="col-lg-10 col-md-10 col-sm-8">
+							<input type="text" id="drive" class="form-control" placeholder="">
+						</div>
+					</div>
+				</div>
+				<div class="table-responsive">
+					<table
+						class="table table-bordered table-striped table-hover formtable">
+						<col width="40px;">
+						<col width="60px;">
+						<col width="120px;">
+						<col width="150px;">
+						<col width="120px;">
+						<col width="120px;">
+						<col width="120px;">
+						<col width="120px;">
+						<thead>
+							<tr class="active">
+								<th class="check"><input type="checkbox" checked
+									id="checkAll"></th>
+								<th>序号</th>
+								<th>表单名称</th>
+								<th>路径</th>
+								<th>提交方式</th>
+								<th>表单类型</th>
+								<th>版本号</th>
+								<th>备注</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="check"><input type="checkbox" checked=""></td>
+								<td>1</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+		</div>
+	</div>
+	<script src="../../js/jquery-1.11.1.min.js"></script>
+	<script src="../../js/bootstrap/bootstrap.min.js"></script>
+	<script>
+		$(".table tr").slice(1).each(function(){
+			var p = this;  
+			$(this).children().slice(1).click(function(){  
+				$($(p).children()[0]).children().each(function(){  
+					if(this.type=="checkbox"){  
+						if(!this.checked){  
+							this.checked = true;  
+						}else{  
+							this.checked = false;  
+						}
+					}
+				});
+			});
+		}); 
+		$(function () {
+            $("#checkAll").click(function () {
+                $("input[type='checkbox']:checkbox").prop("checked", this.checked);
+            });
+        });
+	</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+@charset "utf-8";
+*{
+	margin: 0;
+	padding: 0;
+}
+@font-face{
+	font-family: "ConST-font";
+	src:url(../fonts/Munro.eot), url(../fonts/Munro.otf), url(../fonts/Munro.svg), url(../fonts/Munro.ttf), url(../fonts/Munro.woff);
+}
+a{
+	text-decoration: none;
+}
+li{
+	list-style: none;
+}
+img{
+	border: 0;
+}
+input{
+	border: none;
+}
+hr{
+	border-color: #bbb; 
+}
+header, footer, article, section, nav, menu, hgroup {
+	display: block; 
+}
+h1,h2,h3,h4,h5,h6{
+	font-weight: normal;
+}
+.clear{
+	clear: both;
+}
+.top img{
+	width: 200px;
+	height: 200px;
+	margin-right: 20px;
+	margin-top: 10px;
+	border-radius: 50%;
+	float: left;
+}
+.title{
+	float: left;
+	margin-top: 50px;
+}
+.title h1{
+	color: red;
+	font-size: 24px;
+	line-height: 48px;
+	margin: 0;
+}
+.title h2{
+	color: #333;
+	font-size: 24px;
+	line-height: 48px;
+	margin: 0;
+}
+.describe h3{
+	font-size: 16px;
+	line-height: 36px;
+	color: #555;
+}
+.describe p{
+	font-size: 14px;
+	line-height: 36px;
+	color: #555;
+	text-indent: 2em;
+	margin: 0;
+}
+.return a{
+	display: block;
+	font-size: 14px;
+	line-height: 48px;
+	color: #555;
+	text-indent: 2em;
+	text-decoration: underline;
+}

@@ -1,0 +1,675 @@
+package com.hbcsoft.form.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.hbcsoft.common.HBCSoftConstant;
+import com.hbcsoft.error.ErrorConstant;
+import com.hbcsoft.exception.HbcsoftException;
+import com.hbcsoft.form.dao.FormFieldsDaoImpl;
+import com.hbcsoft.form.dao.FormNameDaoImpl;
+import com.hbcsoft.form.dao.FormTableDaoImpl;
+import com.hbcsoft.form.entity.FormFields;
+import com.hbcsoft.form.entity.FormName;
+import com.hbcsoft.form.entity.FormTable;
+import com.hbcsoft.table.entity.TableEntity;
+import com.hbcsoft.table.entity.TableNameClass;
+import com.hbcsoft.zdy.common.HbcsoftCache;
+import com.hbcsoft.zdy.common.HbcsoftJT;
+import com.hbcsoft.zdy.common.LogBaseClass;
+import com.hbcsoft.zdy.util.SequenceUtil;
+
+/**
+ * 表单Service层实体类
+ * @author zhanghaijiao
+ *
+ */
+@Transactional
+@Service("formTableService")
+public class FormTableServiceImpl extends LogBaseClass<FormTableServiceImpl> implements FormTableService{
+	/**
+	 * 引入HbcsoftJT
+	 */
+	@Autowired
+	private transient HbcsoftJT jt;
+	
+	/**
+	 * 引入FormNameDao层
+	 */
+	@Autowired
+	private transient FormNameDaoImpl formNameDao;
+	
+	/**
+	 * 引入formFieldsDao层
+	 */
+	@Autowired
+	private transient FormFieldsDaoImpl formFieldsDao;
+	
+	/**
+	 * 引入FormTableDao层
+	 */
+	@Autowired
+	private transient FormTableDaoImpl formTableDao;
+	
+	/**
+	 * 查询表单表所有数据
+	 */
+	@Override
+	public List<FormName> queryForm(final String[] qform, final Long companyId){
+		this.getLogger().info("============queryForm=========start==");
+		final String ttable = qform[0];
+		final String method = qform[1];
+		final String formType = qform[2];
+		final String memo = qform[3];
+//		List<FormName> list = new ArrayList<FormName>();
+		final List<String> params = new ArrayList<String>();
+		final StringBuffer sql = new StringBuffer(200);
+		sql.append(HbcsoftCache.getSqlValue("queryform_queryAllForm"));
+		params.add(String.valueOf(companyId));
+		if(ttable != null && !"".equals(ttable)){
+			sql.append(" and formNamef like ?");
+			params.add("%" + ttable + "%");
+		}
+		if(method != null && !"".equals(method)){
+			sql.append(" and method like ?");
+			params.add("%" + method + "%");
+		}
+		if(formType != null && !"".equals(formType)){
+			sql.append(" and formType like ?");
+			params.add("%" + formType + "%");
+		}
+		if(memo != null && !"".equals(memo)){
+			sql.append(" and memo like ?");
+			params.add("%" + memo + "%");
+		}
+		List<FormName> list = null;
+		try {
+			list = formNameDao.queryAll(sql.toString(), jt, params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============queryForm=========end==");
+		return list;
+	}
+	
+	/**
+	 * 分页查询表单表数据
+	 */
+	@Override
+	public List<FormName> queryAllForm(final String[] qallform, final Long companyId) {
+		this.getLogger().info("============queryAllForm=========start==");
+		final String ttable = qallform[0];
+		final String method = qallform[1];
+		final String formType = qallform[2];
+		final String memo = qallform[3];
+		final String startRow = qallform[4];
+		final String pageSize = qallform[5];
+		List<FormName> list = new ArrayList<FormName>();
+		final List<String> params = new ArrayList<String>();
+		final StringBuffer sql = new StringBuffer(200);
+		sql.append(HbcsoftCache.getSqlValue("queryform_queryAllForm"));
+		params.add(String.valueOf(companyId));
+		if(ttable != null && !"".equals(ttable)){
+			sql.append(" and formNamef like ?");
+			params.add("%" + ttable + "%");
+		}
+		if(method != null && !"".equals(method)){
+			sql.append(" and method like ?");
+			params.add("%" + method + "%");
+		}
+		if(formType != null && !"".equals(formType)){
+			sql.append(" and formType like ?");
+			params.add("%" + formType + "%");
+		}
+		if(memo != null && !"".equals(memo)){
+			sql.append(" and memo like ?");
+			params.add("%" + memo + "%");
+		}
+		try {
+			list = formNameDao.queryAll(sql.toString(), jt, Integer.valueOf(startRow),Integer.valueOf(pageSize),params.toArray());
+		} catch (NumberFormatException | InstantiationException | IllegalAccessException e) {
+			this.getLogger().info(e);
+		} 
+		this.getLogger().info("============queryAllForm=========end==");
+		return list;
+	}
+	
+
+	/**
+	 * 保存表单表数据
+	 */
+	@Override
+	public void addFormName(final FormName formName) throws HbcsoftException {
+		this.getLogger().info("============addFormName=========start==");
+		formNameDao.save(formName, jt);
+		this.getLogger().info("============addFormName=========end==");
+	}
+
+	/**
+	 * 保存表单字段表数据
+	 */
+	@Override
+	public void addFormFields(final List<FormFields> formField) throws HbcsoftException {
+		this.getLogger().info("============saveFormFields=========start==");
+		for(int i=0; i<formField.size(); i++){
+			final FormFields te = formField.get(i);
+			formFieldsDao.save(te, jt);
+		}
+		this.getLogger().info("============saveFormFields=========end==");
+		
+	}
+
+	/**
+	 * 保存表单中间表信息
+	 */
+	@Override
+	public void saveFormTable(final List<FormTable> ftn) throws HbcsoftException{
+		this.getLogger().info("============saveFormTable=========start==");
+		for(int i=0; i<ftn.size(); i++){
+			final FormTable forTab = ftn.get(i);
+			formTableDao.save(forTab, jt);
+		}
+		this.getLogger().info("============saveFormTable=========end==");
+	}
+	
+	/**
+	 * 根据formid和fieldsid查询表单字段表中信息
+	 */
+	@Override
+	public FormFields selectFormFields(final int[] intsff,final String[] stringsff, final Long companyId) throws HbcsoftException {
+		this.getLogger().info("============selectUpdateFields=========start==");
+		final int flag1 = intsff[0];
+		final int flag2 = intsff[1];
+		final String formid = stringsff[0];
+		final String fieldId = stringsff[1];
+		FormFields forFie = new FormFields();
+		final String sql = HbcsoftCache.getSqlValue("queryform_selectFormFields");
+			try {
+				forFie =  formFieldsDao.query(sql, jt,String.valueOf(flag1),String.valueOf(flag2),formid,fieldId, String.valueOf(companyId));
+			} catch (InstantiationException |IllegalAccessException e) {
+				this.getLogger().info(e);
+			}
+		this.getLogger().info("============selectUpdateFields=========end==");
+		return forFie;
+	}
+
+	/**
+	 * 保存表单表字段信息
+	 * @param field
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public void saveFormFields(final List<FormFields> field) throws HbcsoftException {
+		this.getLogger().info("============saveFormFields=========start==");
+		for(int i=0; i<field.size();i++){
+			final FormFields ff = field.get(i);
+			formFieldsDao.update(ff, jt);
+		}
+		this.getLogger().info("============saveFormFields=========end==");
+	}
+
+	/**
+	 * 按照表id和公司id查询表单
+	 * @param id
+	 * @param companyId
+	 * @return
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public FormName selectIDForm(final String id, final Long companyId) throws HbcsoftException {
+		this.getLogger().info("============selectIDTable=========start==");
+		FormName forTab = new FormName();
+		final String sql = HbcsoftCache.getSqlValue("queryform_selectIDForm");
+		try {
+			forTab = formNameDao.query(sql, jt,id, String.valueOf(companyId));
+		} catch (InstantiationException | IllegalAccessException e) {
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============selectIDTable=========end==");
+		return forTab;
+	}
+	
+	/**
+	 * 根据表单id和公司id查询表单与表的关系表
+	 * @param formid
+	 * @param companyId
+	 * @return
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public List<FormTable> selectFormTable(final String formid,final Long companyId)throws HbcsoftException{
+		this.getLogger().info("============selectFormTable=========start==");
+		List<FormTable> fortab = new ArrayList<FormTable>();
+		final String sql = HbcsoftCache.getSqlValue("queryform_selectFormTable");
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_0));
+		params.add(formid);
+		params.add(String.valueOf(companyId));
+		try {
+			fortab = formTableDao.queryAll(sql, jt,params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+		}
+		this.getLogger().info("============selectFormTable=========end==");
+		return fortab;
+	}
+	
+	/**
+	 * 查询表单字段信息
+	 */
+	@Override
+	public List<FormFields> selectIDFormField(final int flag1,final int flag2,final String formid, final Long companyId) throws HbcsoftException {
+		this.getLogger().info("============selectIDFields=========start==");
+		List<FormFields> forfie = null;
+		final String sql = HbcsoftCache.getSqlValue("queryform_selectIDFormField");
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(flag1));
+		params.add(String.valueOf(flag2));
+		params.add(formid);
+		params.add(String.valueOf(companyId));
+		try {
+			forfie =  formFieldsDao.queryAll(sql, jt, params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============selectIDFields=========end==");
+		return forfie;
+	}
+	
+	/**
+	 * 根据表单id、表id和公司id查询表单字段信息
+	 * @param formid
+	 * @param tableid
+	 * @param companyId
+	 * @return
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public List<FormFields> selectLstFormField(final String formid,final String tableid, final Long companyId) throws HbcsoftException {
+		this.getLogger().info("============selectIDFields=========start==");
+		List<FormFields> forfie = new ArrayList<FormFields>();
+		final String sql = HbcsoftCache.getSqlValue("queryform_selectLstFormField");
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_0));
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_2));
+		params.add(formid);
+		params.add(tableid);
+		params.add(String.valueOf(companyId));
+		try {
+			forfie =  formFieldsDao.queryAll(sql, jt,params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============selectIDFields=========end==");
+		return forfie;
+	}
+	
+	
+	/**
+	 * 保存表单中间表信息
+	 */
+	public List<FormTable> selectLstFTN(final String formid, final Long companyId) throws HbcsoftException{
+		this.getLogger().info("============selectLstFTN=========start==");
+		List<FormTable> ftn = new ArrayList<FormTable>();
+		final String sql = HbcsoftCache.getSqlValue("queryform_selectLstFTN");
+		try {
+			ftn = formTableDao.queryAll(sql, jt,formid, String.valueOf(companyId));
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+		}
+		this.getLogger().info("============selectLstFTN=========end==");
+		return ftn;
+	}
+	
+	/**
+	 * 查询表单字段表
+	 */
+	@Override
+	public List<FormFields> queryFormFieShow(final Long formid, final Long companyId, final int flag1, final int flag2) throws HbcsoftException {
+		this.getLogger().info("============queryFormFieShow=========start==");
+		List<FormFields> lff = new ArrayList<FormFields>();
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(flag1));
+		params.add(String.valueOf(flag2));
+		params.add(String.valueOf(formid));
+		params.add(String.valueOf(companyId));
+		final String sql = HbcsoftCache.getSqlValue("queryform_queryFormFieShow");
+		try {
+			lff = formFieldsDao.queryAll(sql, jt, params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+		}
+		this.getLogger().info("============queryFormFieShow=========end==");
+		return lff;
+	}
+
+	/**
+	 * 判断数据库中是否有与录入的formType重复的数据
+	 */
+	@Override
+	public FormName isTypeRepeat(final String formType, final Long companyId) throws HbcsoftException {
+		this.getLogger().info("============isTypeRepeat=========start==");
+		FormName formName = null;
+		final String sql = HbcsoftCache.getSqlValue("queryform_isTypeRepeat");
+		try {
+			formName = formNameDao.query(sql, jt, formType,HBCSoftConstant.STR_TRUE, String.valueOf(companyId));
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+		}
+		
+		this.getLogger().info("============isTypeRepeat=========end==");
+		return formName;
+	}
+	
+	
+	/**
+	 * 修改formName表数据
+	 */
+	@Override
+	public void updateFormName(final FormName formName) throws HbcsoftException{
+		this.getLogger().info("============updateFormName=========start==");
+		formNameDao.update(formName,jt);
+		this.getLogger().info("============updateFormName=========end==");
+	};
+	
+	/**
+	 * 表修改是同步formTable信息
+	 * @param tabname
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public void updateFormTable(final TableNameClass tabname) throws HbcsoftException {
+		this.getLogger().info("============updateFormTable=========start==");
+		//查询表单与表关系中状态为0的并且公司id和tableId为XX的集合
+		List<FormTable> lft = new ArrayList<FormTable>();
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_0));
+		params.add(String.valueOf(tabname.getId()));
+		params.add(String.valueOf(tabname.getCompanyId()));
+		final String sql = HbcsoftCache.getSqlValue("queryform_updateFormTable");
+		try {
+			lft = formTableDao.queryAll(sql, jt, params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+		}
+		if(!lft.isEmpty()){
+			for(int i=0;i<lft.size();i++){
+				final FormTable fortab = lft.get(i);
+				if(tabname.getIsMainTable().equals("主表")){
+					fortab.setIsMainTable(HBCSoftConstant.FORM_INPUT_TYPE_0);
+				}else if(tabname.getIsMainTable().equals("子表")){
+					fortab.setIsMainTable(HBCSoftConstant.FORM_INPUT_TYPE_1);
+					fortab.setTableMainId(tabname.getMainId());
+					fortab.setTableMainName(tabname.getMainName());
+				}
+				fortab.setTableMemo(tabname.getMemo());
+				fortab.setTableFlag(tabname.getFlag());
+				formTableDao.update(fortab,jt);
+			}
+		}
+		this.getLogger().info("============updateFormTable=========end==");
+	}
+
+	/**
+	 * 表字段修改时同步formFields信息
+	 * @param tabent
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public void updateFormFields(final TableEntity tabent) throws HbcsoftException {
+		this.getLogger().info("============updateFormFields=========start==");
+		List<FormFields> lstff = new ArrayList<FormFields>();
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_0));
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_2));
+		params.add(String.valueOf(tabent.getMainId()));
+		params.add(String.valueOf(tabent.getCompanyId()));
+		params.add(String.valueOf(tabent.getId()));
+		final String sql = HbcsoftCache.getSqlValue("queryform_updateFormFields");
+		try {
+			lstff = formFieldsDao.queryAll(sql, jt, params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+//			new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+			this.getLogger().info(e);
+		}
+		if(!lstff.isEmpty()){
+			for(int j=0;j<lstff.size();j++){
+				final FormFields forfie = lstff.get(j);
+				if(tabent.getType().equals("COLUMN_TYPE_NUMERIC")){
+					forfie.setInputType(HBCSoftConstant.FORM_INPUT_TYPE_7);
+				}else if(tabent.getType().equals("COLUMN_TYPE_DATE")){
+					forfie.setInputType(HBCSoftConstant.FORM_INPUT_TYPE_5);
+				}else{
+					forfie.setInputType(HBCSoftConstant.FORM_INPUT_TYPE_0);
+				}
+				forfie.setInputDefaultValue(tabent.getDefaultValue());
+				forfie.setFieldFlag(tabent.getFlag());//操作标识：
+				forfie.setInputIsDisplay(tabent.getFlag());
+				formFieldsDao.update(forfie,jt);
+			}
+		}
+		this.getLogger().info("============updateFormFields=========end==");
+	}
+
+	/**
+	 * 表字段新增时同步表单字段信息
+	 * @param tabent
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public void addForFieEnt(final TableEntity tabent) throws HbcsoftException {
+		this.getLogger().info("============addFormFields=========start==");
+		
+		List<FormTable> lstft = new ArrayList<FormTable>();
+		final List<String> params = new ArrayList<String>();
+		params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_0));
+		params.add(String.valueOf(tabent.getMainId()));
+		params.add(String.valueOf(tabent.getCompanyId()));
+		final String sql = HbcsoftCache.getSqlValue("queryform_addForFieEnt");
+		try {
+			lstft = formTableDao.queryAll(sql, jt, params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+//			new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+			this.getLogger().info(e);
+		}
+		final FormFields forfie = new FormFields();
+		for(int i=0;i<lstft.size();i++){
+			forfie.setId(SequenceUtil.getTableId("F_FORMFIELDS"));
+			forfie.setCreateID(tabent.getCreateID());
+			forfie.setCompanyId(tabent.getCompanyId());
+			forfie.setFormId(lstft.get(i).getFormId());
+			forfie.setTableId(tabent.getMainId());
+			forfie.setTableName(tabent.getTableName().getTableName());
+			forfie.setFieldId(tabent.getId());
+			forfie.setFieldName(tabent.getName());
+			forfie.setTitle(tabent.getTitle());
+			forfie.setInputDefaultValue(tabent.getDefaultValue());
+			forfie.setSourceMode(2);
+			forfie.setFieldFlag(tabent.getFlag());
+			if(tabent.getType().equals("COLUMN_TYPE_NUMERIC")){
+				forfie.setInputType(HBCSoftConstant.FORM_INPUT_TYPE_7);
+			}else if(tabent.getType().equals("COLUMN_TYPE_DATE")){
+				forfie.setInputType(HBCSoftConstant.FORM_INPUT_TYPE_5);
+			}else{
+				forfie.setInputType(HBCSoftConstant.FORM_INPUT_TYPE_0);
+			}
+			formFieldsDao.save(forfie, jt);
+		}
+		this.getLogger().info("============addFormFields=========end==");
+		
+	}
+
+	
+	/*********************表单查询开始****************************/
+	@Override
+	public FormName queryFByFormType(final String formType, final Long companyId) throws HbcsoftException
+	{
+		this.getLogger().info("============queryFByFormType=========start==");
+		FormName formTable = null;
+		final String sql = HbcsoftCache.getSqlValue("template_queryFByFormType");
+		
+		try {
+			formTable = formNameDao.query(sql, jt, formType,HBCSoftConstant.STR_TRUE, String.valueOf(companyId));
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException(this.getClass().getName(), ErrorConstant.EXCEPTION_CODE, e);
+		}
+		
+		this.getLogger().info("============queryFByFormType=========end==");
+		return formTable;
+	}
+	/*********************表单查询结束****************************/
+
+	/**
+	 * 表字段删除时同步表单字段信息
+	 * @param entityId
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public void delEntField(final String entityId) throws HbcsoftException {
+		List<FormFields> lstforfie = new ArrayList<FormFields>();
+		final String sql = HbcsoftCache.getSqlValue("queryform_querydelEntField");
+		try {
+			lstforfie = formFieldsDao.queryAll(sql, jt, entityId);
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+			throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+		}
+		for(int i=0;i<lstforfie.size();i++){
+			final FormFields forfie = lstforfie.get(i);
+			forfie.setFieldFlag(1);
+			forfie.setInputIsDisplay(1);
+			formFieldsDao.update(forfie, jt);
+		}
+		
+	}
+	
+	/**
+	 * 表删除时同步表单字段信息
+	 * @param lstTabEnt
+	 * @throws HbcsoftException
+	 */
+	@Override
+	public void delLstForEnt(final List<TableEntity> lstTabEnt) throws HbcsoftException {
+		this.getLogger().info("============updateFormFields=========start==");
+		final List<String> params = new ArrayList<String>();
+		for(int i=0;i<lstTabEnt.size();i++){
+			params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_0));
+			params.add(String.valueOf(HBCSoftConstant.FORM_INPUT_TYPE_2));
+			params.add(String.valueOf(lstTabEnt.get(i).getMainId()));
+			params.add(String.valueOf(lstTabEnt.get(i).getCompanyId()));
+			final String sql = HbcsoftCache.getSqlValue("queryform_delLstForEnt");
+			try {
+				final List<FormFields> lstff = formFieldsDao.queryAll(sql, jt, params.toArray());
+				params.clear();
+				if(!lstff.isEmpty()){
+					for(int j=0;j<lstff.size();j++){
+						final FormFields forfie = lstff.get(j);
+						forfie.setFieldFlag(lstTabEnt.get(i).getFlag());//操作标识：
+						forfie.setInputIsDisplay(lstTabEnt.get(i).getFlag());
+						formFieldsDao.update(forfie,jt);
+					}
+				}
+			} catch (InstantiationException | IllegalAccessException e) {
+//				e.printStackTrace();
+				this.getLogger().info(e);
+				throw new HbcsoftException("",ErrorConstant.ERROR_CODE,e);
+			}
+		}
+		this.getLogger().info("============updateFormFields=========end==");
+	}
+
+	/**
+	 * 根据公司id和表单类型查询表单表
+	 */
+	@Override
+	public List<FormName> queryisFormName(final Long companyId,final String formType, final int isEnabled) throws HbcsoftException {
+		this.getLogger().info("============queryisFormName=========start==");
+		List<FormName> lstforNam = new ArrayList<FormName>();
+		final List<String> params = new ArrayList<String>();
+		params.add(formType);
+		params.add(String.valueOf(isEnabled));
+		params.add(String.valueOf(companyId));
+		final String sql = HbcsoftCache.getSqlValue("queryform_isTypeRepeat");
+		try {
+			lstforNam = formNameDao.queryAll(sql, jt,params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============queryisFormName=========end==");
+		return lstforNam;
+	}
+
+	/**
+	 * 根据公司id、表单类型和版本号查询表单表
+	 */
+	@Override
+	public List<FormName> queryUpdateIsFormName(final Long companyId, final String formType, final int isEnabled, final String version)
+			throws HbcsoftException {
+		this.getLogger().info("============queryisFormName=========start==");
+		List<FormName> lstforNam = new ArrayList<FormName>();
+		final List<String> params = new ArrayList<String>();
+		params.add(formType);
+		params.add(String.valueOf(isEnabled));
+		params.add(String.valueOf(companyId));
+		params.add(version);
+		final String sql = HbcsoftCache.getSqlValue("queryform_isFormName");
+		try {
+			lstforNam = formNameDao.queryAll(sql, jt,params.toArray());
+		} catch (InstantiationException | IllegalAccessException e) {
+//			e.printStackTrace();
+			this.getLogger().info(e);
+		}
+		this.getLogger().info("============queryisFormName=========end==");
+		return lstforNam;
+	}
+	/**
+	 * 根据创建的数据库表id获取表信息
+	 */
+	@Override
+	public List<FormTable> getListFT(final String tableid,final long companyId) throws HbcsoftException {
+		List<FormTable> list = new ArrayList<FormTable>();
+		final String sql = HbcsoftCache.getSqlValue("queryform_queryAlltable");
+		try {
+			list = formTableDao.queryAll(sql, jt, tableid, companyId);
+			
+		} catch (InstantiationException e) {
+			this.getLogger().info(e);
+			throw new HbcsoftException(this.getClass().getName(), 999, e);
+		} catch (IllegalAccessException e) {
+			this.getLogger().info(e);
+			throw new HbcsoftException(this.getClass().getName(), 999, e);
+		}
+		return list;
+	}
+	/**
+	 * 
+	 */
+	@Override
+	public int getTableData(final String tableName,final long companyId) throws HbcsoftException {
+		int size = 0;
+		final String sql = "SELECT COUNT(*) FROM "+tableName;
+		size = jt.queryForObject(sql, Integer.class);
+		return size;
+	}
+}

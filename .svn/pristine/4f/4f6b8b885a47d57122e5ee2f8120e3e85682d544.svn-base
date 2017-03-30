@@ -1,0 +1,13 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>都进报错页面了好要什么标题啊！</title>
+</head>
+<body>
+${code }
+${message }
+</body>
+</html>
